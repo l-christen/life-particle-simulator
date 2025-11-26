@@ -1,7 +1,7 @@
 [gd_scene load_steps=3 format=3 uid="uid://kkfmi5oujux3"]
 
-[ext_resource type="Script" uid="uid://dssvkah04q2tb" path="res://particles.gd" id="1_48p3t"]
-[ext_resource type="Script" uid="uid://bmn0jjejs5wcl" path="res://camera.gd" id="2_wirxl"]
+[ext_resource type="Script" uid="uid://dssvkah04q2tb" path="res://scripts/particles.gd" id="1_48p3t"]
+[ext_resource type="Script" uid="uid://bmn0jjejs5wcl" path="res://scripts/camera.gd" id="2_wirxl"]
 
 [node name="SimulationWorld" type="Node2D"]
 
@@ -10,3 +10,5 @@ script = ExtResource("1_48p3t")
 
 [node name="Camera2D" type="Camera2D" parent="."]
 script = ExtResource("2_wirxl")
+
+[node name="CudaParticlesRenderer" type="CudaParticlesRenderer" parent="."]
