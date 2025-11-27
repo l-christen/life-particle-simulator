@@ -9,8 +9,6 @@ using namespace godot;
 
 // Custom methods have to be binded here in order to be accessible from GDScript
 void CudaParticlesRenderer::_bind_methods() {
-    // Bind _init_vulkan method
-    ClassDB::bind_method(D_METHOD("_init_vulkan"), &CudaParticlesRenderer::_init_vulkan);
 }
 
 // Constructor and Destructor
