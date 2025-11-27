@@ -9,6 +9,7 @@
 using namespace godot;
 
 namespace godot {
+    // Module initialization
     void initialize_gdextension_module(ModuleInitializationLevel p_level) {
         if (p_level != MODULE_INITIALIZATION_LEVEL_SCENE) {
             return;
@@ -17,6 +18,7 @@ namespace godot {
         GDREGISTER_RUNTIME_CLASS(CudaParticlesRenderer);
     }
 
+    // Module uninitialization
     void uninitialize_gdextension_module(ModuleInitializationLevel p_level) {
         if (p_level != MODULE_INITIALIZATION_LEVEL_SCENE) {
             return;
@@ -24,6 +26,7 @@ namespace godot {
     }
 }
 
+// GDExtension entry point
 extern "C" {
 GDExtensionBool GDE_EXPORT cuda_particles_library_init(GDExtensionInterfaceGetProcAddress p_get_proc_address,
     const GDExtensionClassLibraryPtr p_library,

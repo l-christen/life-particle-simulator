@@ -43,10 +43,17 @@ sources = Glob(f"{src_path}/*.cpp")
 
 
 # --------------------------------------------------------------
+# Load Vulkan SDK environment variables
+# --------------------------------------------------------------
+vulkan_sdk = os.environ.get("VULKAN_SDK", None)
+env.Append(CPPPATH=[os.path.join(vulkan_sdk, "Include")])
+env.Append(LIBPATH=[os.path.join(vulkan_sdk, "Lib")])
+env.Append(LIBS=["vulkan-1"])
+
+
+# --------------------------------------------------------------
 # Configure output DLL path
 # --------------------------------------------------------------
-# Example output on Windows:
-#    ../godot/bin/liblife_particles.windows.template_debug.x86_64.dll
 target = os.path.join(
     godot_bin_path,
     f"lib{module_name}{env['suffix']}{env['SHLIBSUFFIX']}"
