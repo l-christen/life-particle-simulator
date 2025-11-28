@@ -15,15 +15,9 @@ namespace godot {
     public:
         CudaParticlesRenderer();
         ~CudaParticlesRenderer();
-
-        // Vulkan initialization flag : needed because vulkan init has to be done in _process after rendering device is ready
-        bool vk_initialized = false;
-        // Vulkan device handle
-        VkInstance vk_instance = VK_NULL_HANDLE;
         
         void _ready() override;
         void _process(double delta) override;
-        void _init_vulkan();
     };
 }
 
