@@ -32,7 +32,7 @@ bool VkContext::init(RenderingServer *rs) {
 
     // Get Vulkan physical device from RenderingDevice
     uint64_t raw_physical_device = rd->get_driver_resource(
-        RenderingDevice::DRIVER_RESOURCE_VULKAN_PHYSICAL_DEVICE,
+        RenderingDevice::DRIVER_RESOURCE_PHYSICAL_DEVICE,
         RID(),
         0
     );
@@ -43,7 +43,7 @@ bool VkContext::init(RenderingServer *rs) {
 
     // Get Vulkan queue from RenderingDevice
     uint64_t raw_queue = rd->get_driver_resource(
-        RenderingDevice::DRIVER_RESOURCE_VULKAN_QUEUE,
+        RenderingDevice::DRIVER_RESOURCE_QUEUE,
         RID(),
         0
     );
@@ -54,7 +54,7 @@ bool VkContext::init(RenderingServer *rs) {
 
     // Get queue family index from RenderingDevice
     uint64_t queue_family_index = rd->get_driver_resource(
-        RenderingDevice::DRIVER_RESOURCE_VULKAN_QUEUE_FAMILY_INDEX,
+        RenderingDevice::DRIVER_RESOURCE_QUEUE_FAMILY,
         RID(),
         0
     );
