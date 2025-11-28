@@ -1,10 +1,7 @@
 #include "vk_context.h"
 
-#include <godot_cpp/core/class_db.hpp>
 #include <godot_cpp/variant/utility_functions.hpp>
-#include <godot_cpp/classes/rendering_server.hpp>
 #include <godot_cpp/classes/rendering_device.hpp>
-#include <vulkan/vulkan.h>
 
 using namespace godot;
 
