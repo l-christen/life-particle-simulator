@@ -18,6 +18,7 @@ struct ParticlesAoS {
     Particle* d_particles; // device pointer to particle data
     Particle* h_particles; // host pointer to particle data
 
+    // Accessor for particle at index i
     __host__ __device__ Particle& particle_i(uint32_t i) const {
         #ifdef __CUDA_ARCH__
             return d_particles[i];
