@@ -10,8 +10,8 @@ class RenderBuffer {
         RenderBuffer(size_t max_particles) {
             capacity = max_particles;
 
-            // Allocate pinned host memory for particles
-            cudaHostAlloc(&h_particles, sizeof(Particle) * capacity, cudaHostAllocMapped);
+            // Allocate pinned host memory for particles with write-combined (allows gpu write by chunk) and mapped flags
+            cudaHostAlloc(&h_particles, sizeof(Particle) * capacity, cudaHostAllocMapped | cudaHostAllocWriteCombined);
 
             // Get device pointers for the mapped host memory
             cudaHostGetDevicePointer(&d_particles, h_particles, 0);
