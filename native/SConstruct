@@ -41,6 +41,34 @@ env.Append(CPPPATH=[os.path.abspath(include_path)])
 # --------------------------------------------------------------
 sources = Glob(f"{src_path}/*.cpp")
 
+# --------------------------------------------------------------
+# CUDA integration (compiling .cu files with nvcc)
+# --------------------------------------------------------------
+cuda_sources = Glob(f"{src_path}/*.cu")
+
+env_nvcc = env.Clone()  # Duplicate build environment for CUDA
+
+# Adjust PATH so nvcc is found (Windows or Linux)
+env_nvcc['ENV']['PATH'] = os.environ['PATH']
+
+# Path to CUDA bin (Linux/macOS)
+env_nvcc.AppendENVPath('PATH', '/usr/local/cuda/bin')
+
+# WINDOWS: uncomment one of these depending on install:
+# env_nvcc.AppendENVPath('PATH', 'C:/Program Files/NVIDIA GPU Computing Toolkit/CUDA/v12.3/bin')
+# env_nvcc.AppendENVPath('PATH', 'C:/Program Files/NVIDIA Corporation/NVSMI')
+
+# Replace CXX with NVCC for .cu
+env_nvcc['CXX'] = 'nvcc'
+env_nvcc['SHCXX'] = 'nvcc'
+
+# Extra NVCC flags
+env_nvcc.Append(CXXFLAGS=[
+    "-Xcompiler", "/wd4819",   # suppress some warnings on MSVC
+])
+
+cuda_objects = env_nvcc.SharedObject(cuda_sources)
+
 
 # --------------------------------------------------------------
 # Configure output DLL path
@@ -58,7 +86,7 @@ target = os.path.join(
 # --------------------------------------------------------------
 library = env.SharedLibrary(
     target=target,
-    source=sources,
+    source=sources + cuda_objects,
 )
 
 
