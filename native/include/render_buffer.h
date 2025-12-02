@@ -3,11 +3,12 @@
 #include "particlesAoS.cuh"
 
 #include <cuda_runtime.h>
+#include <cstdint.h>
 
 class RenderBuffer {
     public:
         // Constructor that allocates pinned host memory for particles
-        RenderBuffer(size_t max_particles) {
+        RenderBuffer(uint32_t max_particles) {
             capacity = max_particles;
 
             // Allocate pinned host memory for particles with write-combined (allows gpu write by chunk) and mapped flags
@@ -19,8 +20,10 @@ class RenderBuffer {
             // Initialize ParticlesAoS structure with device and host pointers
             particlesAoS.d_particles = d_particles;
             particlesAoS.h_particles = h_particles;
-
+            
+            // Set capacity and initialize number of particles to zero
             particlesAoS.capacity = capacity;
+            particlesAoS.numParticles = 0;
         }
 
         // Destructor that frees pinned host memory
@@ -28,9 +31,9 @@ class RenderBuffer {
             cudaFreeHost(h_particles);
         }
 
+        ParticlesAoS particlesAoS; // structure particles buffer
+
         private:
         Particle* h_particles; // host pointer to pinned memory
         Particle* d_particles; // device pointer to mapped host memory
-
-        ParticlesAoS particlesAoS; // structure holding pointers and capacity
 };
