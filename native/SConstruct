@@ -157,11 +157,17 @@ env.Append(BUILDERS={"CudaObject": cuda_builder})
 # Linker paths for CUDA runtime library
 if platform == "windows":
     env.Append(LIBPATH=[f"{cuda_path_nvcc}/lib/x64"])
+    # CORRECTION CRITIQUE ICI :
+    # On remplace "cudart" par "cudart_static" pour inclure le code CUDA dans votre DLL
+    env.Append(LIBS=["cudart_static"])
+    
+    # Bonne pratique : définir ce flag pour éviter que les headers ne cherchent la DLL
+    env.Append(CPPDEFINES=["CUDART_STATIC"])
 else: # linux
     # Common Linux paths for libraries
     env.Append(LIBPATH=[f"{cuda_path_nvcc}/lib64", f"{cuda_path_nvcc}/lib"]) 
-    
-env.Append(LIBS=["cudart"])
+    # Sur Linux aussi, le statique est préférable pour un plugin
+    env.Append(LIBS=["cudart_static", "culibos"])
 
 # --------------------------------------------------------------
 # Sources
