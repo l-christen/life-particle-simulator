@@ -15,7 +15,7 @@
 // Constant memory
 // Store particles rules in constant memory for faster access in kernels
 // It is redundant and read only, so constant memory is a good fit
-#define NUM_PARTICLE_TYPES 5 // static value for now
+#define NUM_PARTICLE_TYPES 4 // static value for now
 __constant__ float particleRules[NUM_PARTICLE_TYPES * NUM_PARTICLE_TYPES];
 // Store radius of influence for each particle type
 __constant__ float radiusOfInfluence[NUM_PARTICLE_TYPES];
@@ -173,5 +173,7 @@ extern "C" void runSimulationStep(
 
 
     cudaDeviceSynchronize();
+
+    cudaMemcpy(render->h_particles, render->d_particles, sizeof(Particle) * numParticles, cudaMemcpyDeviceToHost);
 }
 
