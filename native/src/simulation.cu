@@ -1,11 +1,11 @@
 
 #include "particlesAoS.cuh"
 #include "particlesSoA.cuh"
-#include "particle_type.h"
 
 #include <cuda_runtime.h>
 #include <device_launch_parameters.h>
 #include <cstdint>
+#include <cstdio>
 
 
 // This simulation kernel is a first simple implementation of a particle system
@@ -74,6 +74,7 @@ extern "C" void initSimulation(
     cudaMemcpy(next->d_vy, h_vy, sizeof(float) * numParticles, cudaMemcpyHostToDevice);
     
     cudaMemcpy(render->d_particles, h_particles, sizeof(Particle) * numParticles, cudaMemcpyHostToDevice);
+
 
     // Clean up
     delete[] h_x;
@@ -153,36 +154,24 @@ extern "C" void runSimulationStep(
     int numParticles,
     float width,
     float height,
-    float deltaTime,
-    cudaEvent_t simulation_done
+    float deltaTime
 ) {
-    // Create a CUDA stream for asynchronous execution
-    // Suggested by ChatGPT, has to be tested properly
-    static cudaStream_t sim_stream = nullptr;
-    if (!sim_stream) {
-        cudaStreamCreate(&sim_stream);
-    }
-
     // "Random" block and grid size for now, need to be optimized later
     int threadsPerBlock = 256;
     int blocksPerGrid = (numParticles + threadsPerBlock - 1) / threadsPerBlock;
 
     // Launch the kernel in the created stream
-    updateParticlePositions<<<blocksPerGrid, threadsPerBlock, 0, sim_stream>>>(
+    updateParticlePositions<<<blocksPerGrid, threadsPerBlock>>>(
         *prev,
         *next,
         *render,
         numParticles,
+        width,
+        height,
         deltaTime
     );
 
-    // Check for kernel errors
-    cudaError_t err = cudaGetLastError();
-    if (err != cudaSuccess) {
-        return;
-    }
 
-    // Record an event to signal when the simulation step is done
-    cudaEventRecord(simulation_done, sim_stream);
+    cudaDeviceSynchronize();
 }
 

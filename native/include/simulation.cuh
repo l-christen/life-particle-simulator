@@ -28,8 +28,7 @@ void runSimulationStep(
     int numParticles,
     float width,
     float height,
-    float deltaTime,
-    cudaEvent_t simulation_done
+    float deltaTime
 );
 
 #ifdef __cplusplus

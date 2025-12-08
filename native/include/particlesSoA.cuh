@@ -1,7 +1,6 @@
 #pragma once
 
 #include <cuda_runtime.h>
-#include <cuda/std/span>
 #include <cstdint>
 
 /*

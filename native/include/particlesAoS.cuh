@@ -1,9 +1,6 @@
 #pragma once
 
 #include "particle.h"
-
-#include <cuda_runtime.h>
-#include <cuda/std/span>
 #include <cstdint>
 
 /*

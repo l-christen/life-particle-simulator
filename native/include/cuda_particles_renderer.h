@@ -2,10 +2,13 @@
 #define CUDA_PARTICLES_RENDERER_H
 
 #include <godot_cpp/classes/node2d.hpp>
+#include <godot_cpp/classes/multi_mesh.hpp>
 #include <cuda_runtime.h>
+#include <vector>
 
 #include "render_buffer.h"
 #include "compute_buffers.h"
+#include "simulation.cuh"
 
 namespace godot {
     class CudaParticlesRenderer : public Node2D {
@@ -23,10 +26,6 @@ namespace godot {
 
         // Simulation control
         bool simulation_running = false;
-        // CUDA event to signal simulation completion, this should allow Godot to render while
-        // the simulation is running without waiting for a step to complete
-        // proposed by ChatGPT, has to be tested properly
-        cudaEvent_t simulation_done;
     
     protected:
         static void _bind_methods();
@@ -37,6 +36,7 @@ namespace godot {
 
         void _ready() override;
         void _process(double delta) override;
+        void CudaParticlesRenderer::update_multimesh(ParticlesAoS& render_buffer);
     };
 }
 
