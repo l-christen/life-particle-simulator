@@ -31,6 +31,14 @@ void runSimulationStep(
     float deltaTime
 );
 
+void setSimulationRules(
+    const float* rules
+);
+
+void setSimulationRadiusOfInfluence(
+    const float* radiusOfInfluence
+);
+
 #ifdef __cplusplus
 }
 #endif

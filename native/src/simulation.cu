@@ -177,3 +177,10 @@ extern "C" void runSimulationStep(
     cudaMemcpy(render->h_particles, render->d_particles, sizeof(Particle) * numParticles, cudaMemcpyDeviceToHost);
 }
 
+extern "C" void setSimulationRules(const float* rules) {
+    cudaMemcpyToSymbol(particleRules, rules, sizeof(float) * NUM_PARTICLE_TYPES * NUM_PARTICLE_TYPES);
+}
+
+extern "C" void setSimulationRadiusOfInfluence(const float* radiusOfInfluence) {
+    cudaMemcpyToSymbol(radiusOfInfluence, radiusOfInfluence, sizeof(float) * NUM_PARTICLE_TYPES);
+}
