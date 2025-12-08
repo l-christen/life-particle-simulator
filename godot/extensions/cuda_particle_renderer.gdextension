@@ -1,0 +1,8 @@
+[configuration]
+entry_symbol = "cuda_particles_library_init"
+compatibility_minimum = "4.5"
+reloadable = true
+
+[libraries]
+windows.debug.x86_64 = "res://bin/life_particles.windows.template_debug.dll"
+windows.release.x86_64 = "res://bin/life_particles.windows.template_release.dll"
