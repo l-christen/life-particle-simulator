@@ -31,16 +31,15 @@ extern "C" void initSimulation(
     ParticlesSoA* prev,
     ParticlesSoA* next,
     ParticlesAoS* render,
-    const float* rules,
-    const float* radius,
-    int numParticles,
-    int numTypes,
+    uint32_t numRed,
+    uint32_t numBlue,
+    uint32_t numGreen,
+    uint32_t numYellow,
     float width,
     float height
 ) {
-    // Copy rules to constant memory
-    cudaMemcpyToSymbol(particleRules, rules, sizeof(float) * numTypes * numTypes);
-    cudaMemcpyToSymbol(radiusOfInfluence, radius, sizeof(float) * numTypes);
+    uint32_t numParticles = numRed + numBlue + numGreen + numYellow;
+    uint32_t numTypes = NUM_PARTICLE_TYPES;
 
     // Allocate host arrays
     float* h_x = new float[numParticles];
@@ -50,13 +49,36 @@ extern "C" void initSimulation(
     uint32_t* h_type = new uint32_t[numParticles];
     Particle* h_particles = new Particle[numParticles];
 
+    // Counts for each type
+    uint32_t countRed = 0;
+    uint32_t countBlue = 0;
+    uint32_t countGreen = 0;
+    uint32_t countYellow = 0;
+
     // Initialize on host
     for (int i = 0; i < numParticles; i++) {
         h_x[i] = static_cast<float>(rand()) / (static_cast<float>(RAND_MAX / width));
         h_y[i] = static_cast<float>(rand()) / (static_cast<float>(RAND_MAX / height));
         h_vx[i] = 0.0f;
         h_vy[i] = 0.0f;
-        h_type[i] = rand() % numTypes;
+        uint32_t type = 0;
+        if (countRed < numRed) {
+            type = 1; // Red
+            countRed++;
+        }
+        else if (countBlue < numBlue) {
+            type = 2; // Blue
+            countBlue++;
+        }
+        else if (countGreen < numGreen) {
+            type = 3; // Green
+            countGreen++;
+        }
+        else if (countYellow < numYellow) {
+            type = 4; // Yellow
+            countYellow++;
+        }
+        h_type[i] = type;
         
         h_particles[i] = { h_x[i], h_y[i], h_type[i], 0 };
     }

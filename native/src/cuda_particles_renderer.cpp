@@ -24,38 +24,14 @@ CudaParticlesRenderer::~CudaParticlesRenderer() {
 
 void CudaParticlesRenderer::_ready() {
     UtilityFunctions::print("CudaParticlesRenderer is ready!");
-    
-    // Initialize buffers with 1 thousand particles max capacity for now
-    compute = new ComputeBuffers(1000);
 
-    // Random rules
-    float rules[16] = {
-        0.0f,  0.5f, -0.3f,  0.2f,
-        0.5f,  0.0f,  0.6f, -0.2f,
-        -0.3f,  0.6f,  0.0f,  0.7f,
-        0.2f, -0.2f,  0.7f,  0.0f
-    };
-
-    float radiusOfInfluence[4] = { 15.0f, 20.0f, 25.0f, 30.0f };
-
-    // Initialize simulation
-    initSimulation(
-        &compute->prev,
-        &compute->next,
-        &compute->renderBuffer,
-        rules,
-        radiusOfInfluence,
-        1000,
-        4,
-        1024.0f,
-        768.0f
-    );
+    // Initialize buffers with 1 million particles max capacity for now
+    compute = new ComputeBuffers(1000000);
 
     // Initialize multimesh for rendering
     multimesh = memnew(MultiMesh);
     multimesh->set_use_colors(true);
     multimesh->set_transform_format(MultiMesh::TRANSFORM_2D);
-    multimesh->set_instance_count(compute->renderBuffer.numParticles);
 
     // Create mesh
     godot::Ref<godot::QuadMesh> mesh;
@@ -70,14 +46,19 @@ void CudaParticlesRenderer::_ready() {
 }
 
 void CudaParticlesRenderer::_process(double delta) {
-    runSimulationStep(&compute->prev, &compute->next, &compute->renderBuffer, compute->renderBuffer.numParticles, 1024.0f, 768.0f, 0.01f);
+    if (!is_initialized) {
+        return;
+    }
+    if (is_initialized && is_running) {
+        // Run simulation step
+        runSimulationStep(&compute->prev, &compute->next, &compute->renderBuffer, num_particles, sim_width, sim_height, delta_time);
 
-    // Swap buffers for next iteration
-    compute->swap();
+        // Swap buffers for next iteration
+        compute->swap();
 
-    // Update multimesh with new particle positions
-    update_multimesh(compute->renderBuffer);
-
+        // Update multimesh with new particle positions
+        update_multimesh(compute->renderBuffer);
+    }
 }
 
 void CudaParticlesRenderer::update_multimesh(ParticlesAoS& render_buffer)
@@ -114,4 +95,77 @@ void CudaParticlesRenderer::update_multimesh(ParticlesAoS& render_buffer)
 
         multimesh->set_instance_color(i, col);
     }
+}
+
+void CudaParticlesRenderer::start_simulation(
+    int numRed,
+    int numBlue,
+    int numGreen,
+    int numYellow,
+    PackedFloat32Array simulationRules,
+    PackedFloat32Array simulationRadiusOfInfluence,
+    int width,
+    int height,
+    float deltaTime
+) {
+
+    // Set the number of particles
+    num_particles = numRed + numBlue + numGreen + numYellow;
+
+    // Set sim_width, sim_height, delta_time
+    sim_width = static_cast<float>(width);
+    sim_height = static_cast<float>(height);
+    delta_time = deltaTime;
+
+    // Update rules and radius of influence
+    update_rules(simulationRules);
+    update_radius_of_influence(simulationRadiusOfInfluence);
+
+    initSimulation(
+        &compute->prev,
+        &compute->next,
+        &compute->renderBuffer,
+        numRed,
+        numBlue,
+        numGreen,
+        numYellow,
+        sim_width,
+        sim_height
+    );
+
+    // Set the number of particles in the multimesh
+    multimesh->set_instance_count(num_particles);
+
+    is_initialized = true;
+    is_running = true;
+}
+
+
+// Update simulation rules
+void CudaParticlesRenderer::update_rules(PackedFloat32Array simulationRules) {
+    // Get raw pointer to the rules data, allowed since PackedFloat32Array stores data contiguously
+    const float* raw_rules_ptr = simulationRules.ptr();
+
+    // Update rules in device constant memory
+    setSimulationRules(raw_rules_ptr);
+}
+
+// Update simulation radius of influence
+void CudaParticlesRenderer::update_radius_of_influence(PackedFloat32Array simulationRadiusOfInfluence) {
+    // Get raw pointer to the radius of influence data
+    const float* raw_radius_ptr = simulationRadiusOfInfluence.ptr();
+
+    // Update radius of influence in device constant memory
+    setSimulationRadiusOfInfluence(raw_radius_ptr);
+}
+
+// Toggle simulation running state
+void CudaParticlesRenderer::update_is_running() {
+    is_running = !is_running;
+}
+
+// Stop the simulation
+void CudaParticlesRenderer::stop_simulation() {
+    is_running = false;
+    is_initialized = false;
 }

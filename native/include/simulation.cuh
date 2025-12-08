@@ -9,14 +9,14 @@
 extern "C" {
 #endif
 
-void initSimulation(
+extern "C" void initSimulation(
     ParticlesSoA* prev,
     ParticlesSoA* next,
     ParticlesAoS* render,
-    const float* rules,
-    const float* radiusOfInfluence,
-    int numParticles,
-    int numTypes,
+    uint32_t numRed,
+    uint32_t numBlue,
+    uint32_t numGreen,
+    uint32_t numYellow,
     float width,
     float height
 );
