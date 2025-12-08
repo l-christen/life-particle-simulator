@@ -6,7 +6,6 @@
 #include <cuda_runtime.h>
 #include <vector>
 
-#include "render_buffer.h"
 #include "compute_buffers.h"
 #include "simulation.cuh"
 
@@ -16,7 +15,6 @@ namespace godot {
     
     private:
         // Simulation and rendering buffers
-        RenderBuffer* render = nullptr;
         ComputeBuffers* compute = nullptr;
 
         // Multimesh instance for rendering particles
