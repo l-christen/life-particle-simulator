@@ -39,7 +39,6 @@ extern "C" void initSimulation(
     float height
 ) {
     uint32_t numParticles = numRed + numBlue + numGreen + numYellow;
-    uint32_t numTypes = NUM_PARTICLE_TYPES;
 
     // Allocate host arrays
     float* h_x = new float[numParticles];
