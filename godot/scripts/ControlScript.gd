@@ -1,0 +1,299 @@
+extends Control
+
+
+@onready var particle_renderer = $"../..//CudaParticlesRenderer"
+
+@onready var particle_count_panel = $GlobalVBox/ParticleCountHBox
+@onready var rules_radius_panel = $GlobalVBox/RulesRadiusVBox
+
+@onready var start_stop_button = $GlobalVBox/SimControlsHBox/StartStopButton
+@onready var toggle_pause_button = $GlobalVBox/SimControlsHBox/TogglePauseButton
+@onready var dt_input_panel = $GlobalVBox/DTHBox
+
+enum SimState { IDLE, RUNNING, PAUSED }
+var current_state = SimState.IDLE
+
+var sim_width: int
+var sim_height: int
+
+const UI_PANEL_WIDTH: int = 350
+
+
+# Called when the node enters the scene tree for the first time.
+func _ready() -> void:
+	sim_width = DisplayServer.window_get_size().x
+	sim_height = DisplayServer.window_get_size().y - UI_PANEL_WIDTH
+	
+	setup_slider_ranges()
+	
+	_connect_sliders()
+	_connect_spinboxes()
+	
+	update_ui_for_state()
+
+
+# Called every frame. 'delta' is the elapsed time since the previous frame.
+func _process(_delta: float) -> void:
+	pass
+
+func update_ui_for_state():
+	var dt_input_node = dt_input_panel.get_node("DtInput")
+
+	match current_state:
+		SimState.IDLE:
+			particle_count_panel.visible = true
+			rules_radius_panel.visible = true
+			dt_input_panel.visible = true
+			toggle_pause_button.visible = false
+			start_stop_button.visible = true
+			start_stop_button.text = "Start"
+			
+			dt_input_node.editable = true
+			
+		SimState.RUNNING:
+			particle_count_panel.visible = false
+			rules_radius_panel.visible = false
+			dt_input_panel.visible = true
+			toggle_pause_button.visible = true
+			toggle_pause_button.text = "Pause"
+			start_stop_button.visible = true
+			start_stop_button.text = "Stop"
+			
+			dt_input_node.editable = false
+
+			
+		SimState.PAUSED:
+			particle_count_panel.visible = false
+			rules_radius_panel.visible = true
+			dt_input_panel.visible = true
+			toggle_pause_button.visible = true
+			toggle_pause_button.text = "Play"
+			start_stop_button.visible = true
+			start_stop_button.text = "Stop"
+			
+			dt_input_node.editable = true
+			
+
+func _on_start_stop_button_pressed():
+	if current_state == SimState.IDLE:
+		var params = collect_simulation_parameters()
+
+		var total_particles = params.num_red + params.num_blue + params.num_green + params.num_yellow
+		if total_particles == 0:
+			print("Erreur: Le nombre total de particules doit être supérieur à zéro.")
+			return
+
+		particle_renderer.start_simulation(
+			params.num_red,
+			params.num_blue,
+			params.num_green,
+			params.num_yellow,
+			params.rules,
+			params.radius,
+			sim_width,
+			sim_height,
+			params.dt
+			)
+		
+		# Passer à l'état d'exécution
+		current_state = SimState.RUNNING
+		update_ui_for_state()
+		
+	elif current_state == SimState.RUNNING or current_state == SimState.PAUSED:
+		particle_renderer.stop_simulation()
+		
+		current_state = SimState.IDLE
+		update_ui_for_state()
+		
+func _on_toggle_pause_button_pressed():
+	if current_state == SimState.RUNNING:
+		particle_renderer.update_is_running()
+		current_state = SimState.PAUSED
+		update_ui_for_state()
+		
+	elif current_state == SimState.PAUSED:
+		particle_renderer.update_is_running()
+		current_state = SimState.RUNNING
+		update_ui_for_state()
+
+func get_numerical_input(path_to_input_node) -> float:
+	var input_node = get_node(path_to_input_node)
+	if input_node is SpinBox:
+		return float(input_node.value)
+	elif input_node is LineEdit:
+		if input_node.text.is_valid_float():
+			return float(input_node.text)
+	return 0.0
+
+func get_slider_rules() -> PackedFloat32Array:
+	var rules_array = PackedFloat32Array()
+	
+	var color_data = [
+		{"key": "R", "vbox": $GlobalVBox/RulesRadiusVBox/RedParametersVBox},
+		{"key": "B", "vbox": $GlobalVBox/RulesRadiusVBox/BlueParametersVBox},
+		{"key": "G", "vbox": $GlobalVBox/RulesRadiusVBox/GreenParametersVBox},
+		{"key": "Y", "vbox": $GlobalVBox/RulesRadiusVBox/YellowParametersVBox}
+	]
+	var target_order = ["R", "B", "G", "Y"] 
+	
+	for source in color_data:
+		var source_key = source.key # R, B, G, ou Y
+		var source_vbox = source.vbox
+		
+		for target_key in target_order:
+			var slider_container_name = source_key + "x" + target_key + "SliderHBox"
+			
+			var slider_path = slider_container_name + "/HSlider"
+			
+			var slider = source_vbox.get_node_or_null(slider_path)
+			
+			if slider and slider is HSlider:
+				rules_array.append(slider.value)
+			else:
+				rules_array.append(0.0)
+				
+	return rules_array
+
+func get_radius_of_influence() -> PackedFloat32Array:
+	var radius_array = PackedFloat32Array()
+	
+	var color_order = [
+		{"name": "Red", "vbox": $GlobalVBox/RulesRadiusVBox/RedParametersVBox},
+		{"name": "Blue", "vbox": $GlobalVBox/RulesRadiusVBox/BlueParametersVBox},
+		{"name": "Green", "vbox": $GlobalVBox/RulesRadiusVBox/GreenParametersVBox},
+		{"name": "Yellow", "vbox": $GlobalVBox/RulesRadiusVBox/YellowParametersVBox}
+	]
+	
+	for color in color_order:
+		var color_name = color.name
+		var color_vbox = color.vbox
+		
+		var radius_container_name = color_name + "RadiusHBox"
+		var input_path = radius_container_name + "/RadiusInput"
+		
+		var input_node = color_vbox.get_node_or_null(input_path)
+		
+		if input_node:
+			var radius_value = get_numerical_input(input_node.get_path())
+			radius_array.append(radius_value)
+		else:
+			radius_array.append(0.0)
+			print("Erreur: Nœud d'entrée de rayon non trouvé pour %s." % color_name)
+			
+	return radius_array
+	
+func collect_simulation_parameters() -> Dictionary:
+	var num_red = get_numerical_input(str(particle_count_panel.get_path()) + "/RedParticleCount/RedCountInput")
+	var num_blue = get_numerical_input(str(particle_count_panel.get_path()) + "/BlueParticleCount/BlueCountInput")
+	var num_green = get_numerical_input(str(particle_count_panel.get_path()) + "/GreenParticleCount/GreenCountInput")
+	var num_yellow = get_numerical_input(str(particle_count_panel.get_path()) + "/YellowParticleCount/YellowCountInput")
+	
+	var dt_value = get_numerical_input(str(dt_input_panel.get_path()) + "/DtInput")
+
+	var rules_array = get_slider_rules()
+	var radius_array = get_radius_of_influence()
+
+	return {
+		"num_red": int(num_red),
+		"num_blue": int(num_blue),
+		"num_green": int(num_green),
+		"num_yellow": int(num_yellow),
+		"rules": rules_array,
+		"radius": radius_array,
+		"dt": dt_value
+	}
+
+func _on_parameter_input_changed(_new_value):
+	if current_state == SimState.PAUSED:
+		var rules_array = get_slider_rules()
+		var radius_array = get_radius_of_influence()
+		var dt_value = get_numerical_input(str(dt_input_panel.get_path()) + "/DtInput")
+		
+		particle_renderer.update_rules(rules_array)
+		particle_renderer.update_radius_of_influence(radius_array)
+		particle_renderer.deltaTime = dt_value
+		
+
+func _on_h_slider_value_changed(value: float) -> void:
+	var slider_node = get_tree().get_last_shouted_node()
+	
+	if slider_node and slider_node is HSlider:
+		var value_label = slider_node.get_node("../SliderValue")
+		if value_label and value_label is Label:
+			value_label.text = "%.5f" % value
+			
+			if current_state == SimState.PAUSED:
+				_on_parameter_input_changed(value)
+		value_label.text = "%.5f" % value
+
+func setup_slider_ranges():
+	const MIN_RULE_VALUE: float = -20.0
+	const MAX_RULE_VALUE: float = 20.0
+	const SLIDER_STEP: float = 0.1
+	
+	var color_vboxes = [
+		$GlobalVBox/RulesRadiusVBox/RedParametersVBox,
+		$GlobalVBox/RulesRadiusVBox/BlueParametersVBox,
+		$GlobalVBox/RulesRadiusVBox/GreenParametersVBox,
+		$GlobalVBox/RulesRadiusVBox/YellowParametersVBox
+	]
+	
+	for color_vbox in color_vboxes:
+		for child in color_vbox.get_children():
+			
+			var slider = child.get_node_or_null("HSlider")
+			
+			if slider and slider is HSlider:
+				slider.min_value = MIN_RULE_VALUE
+				slider.max_value = MAX_RULE_VALUE
+				slider.step = SLIDER_STEP
+				slider.value = 0.0
+
+func _connect_sliders():
+	var color_vboxes = [
+		$GlobalVBox/RulesRadiusVBox/RedParametersVBox,
+		$GlobalVBox/RulesRadiusVBox/BlueParametersVBox,
+		$GlobalVBox/RulesRadiusVBox/GreenParametersVBox,
+		$GlobalVBox/RulesRadiusVBox/YellowParametersVBox
+	]
+	
+	for color_vbox in color_vboxes:
+		for child in color_vbox.get_children():
+			var slider = child.get_node_or_null("HSlider")
+			
+			if slider and slider is HSlider:
+				if not slider.is_connected("value_changed", Callable(self, "_on_h_slider_value_changed")):
+					slider.connect("value_changed", Callable(self, "_on_h_slider_value_changed"))
+
+# Placez cette fonction dans votre script d'UI Manager
+func _connect_spinboxes():
+	# 1. SpinBoxes de Rayon (4x)
+	var radius_vboxes = [
+		$GlobalVBox/RulesRadiusVBox/RedParametersVBox,
+		# ... Blue, Green, YellowParametersVBox
+	]
+	for vbox in radius_vboxes:
+		var input_node = vbox.get_node_or_null("RedRadiusHBox/RadiusInput") # Chemin selon la couleur
+		if input_node and input_node is SpinBox:
+			if not input_node.is_connected("value_changed", Callable(self, "_on_parameter_input_changed")):
+				input_node.connect("value_changed", Callable(self, "_on_parameter_input_changed"))
+
+	# 2. SpinBoxes de Compte de Particules (4x)
+	var count_nodes = [
+		$GlobalVBox/ParticleCountHBox/RedParticleCount/RedCountInput,
+		$GlobalVBox/ParticleCountHBox/RedParticleCount/BlueCountInput,
+		$GlobalVBox/ParticleCountHBox/RedParticleCount/GreenCountInput,
+		$GlobalVBox/ParticleCountHBox/RedParticleCount/YellowCountInput,
+	]
+	for node in count_nodes:
+		if node and node is SpinBox:
+			if not node.is_connected("value_changed", Callable(self, "_on_count_input_changed")):
+				node.connect("value_changed", Callable(self, "_on_count_input_changed"))
+
+	var dt_node = dt_input_panel.get_node_or_null("DtInput")
+	if dt_node and dt_node is SpinBox:
+		if not dt_node.is_connected("value_changed", Callable(self, "_on_parameter_input_changed")):
+			dt_node.connect("value_changed", Callable(self, "_on_parameter_input_changed"))
+			
+func _on_count_input_changed(_new_value: float):
+	pass

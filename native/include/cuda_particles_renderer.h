@@ -25,9 +25,6 @@ namespace godot {
         float sim_width = 1024.0f;
         float sim_height = 768.0f;
 
-        // Delta time for simulation steps
-        float delta_time = 0.01f;
-
         // State flags
         bool is_initialized = false;
         bool is_running = false;
@@ -46,6 +43,9 @@ namespace godot {
     public:
         CudaParticlesRenderer();
         ~CudaParticlesRenderer();
+
+        // Delta time for simulation steps
+        float delta_time = 0.01f;
 
         void _ready() override;
         void _process(double delta) override;

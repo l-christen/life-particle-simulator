@@ -16,6 +16,7 @@ void CudaParticlesRenderer::_bind_methods() {
     ClassDB::bind_method(D_METHOD("update_radius_of_influence", "simulationRadiusOfInfluence"), &CudaParticlesRenderer::update_radius_of_influence);
     ClassDB::bind_method(D_METHOD("update_is_running"), &CudaParticlesRenderer::update_is_running);
     ClassDB::bind_method(D_METHOD("stop_simulation"), &CudaParticlesRenderer::stop_simulation);
+    ClassDB::add_property<CudaParticlesRenderer, float>("delta_time", &CudaParticlesRenderer::delta_time, 0.01f);
 }
 
 CudaParticlesRenderer::CudaParticlesRenderer() {

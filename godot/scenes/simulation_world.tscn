@@ -1,5 +1,6 @@
-[gd_scene load_steps=2 format=3 uid="uid://kkfmi5oujux3"]
+[gd_scene load_steps=3 format=3 uid="uid://kkfmi5oujux3"]
 
+[ext_resource type="Script" uid="uid://cfvcr5kwoekt" path="res://scripts/ControlScript.gd" id="2_ef63j"]
 [ext_resource type="Script" uid="uid://bmn0jjejs5wcl" path="res://scripts/camera.gd" id="2_wirxl"]
 
 [node name="SimulationWorld" type="Node2D"]
@@ -8,3 +9,378 @@
 script = ExtResource("2_wirxl")
 
 [node name="CudaParticlesRenderer" type="CudaParticlesRenderer" parent="."]
+_import_path = NodePath("")
+unique_name_in_owner = false
+process_mode = 0
+process_priority = 0
+process_physics_priority = 0
+process_thread_group = 0
+physics_interpolation_mode = 0
+auto_translate_mode = 0
+editor_description = ""
+script = null
+
+[node name="CanvasLayer" type="CanvasLayer" parent="."]
+
+[node name="Control" type="Control" parent="CanvasLayer"]
+layout_mode = 3
+anchor_bottom = 1.0
+offset_bottom = 1031.0
+grow_horizontal = 2
+grow_vertical = 2
+script = ExtResource("2_ef63j")
+
+[node name="GlobalVBox" type="VBoxContainer" parent="CanvasLayer/Control"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="ParticleCountHBox" type="HBoxContainer" parent="CanvasLayer/Control/GlobalVBox"]
+layout_mode = 2
+
+[node name="RedParticleCount" type="VBoxContainer" parent="CanvasLayer/Control/GlobalVBox/ParticleCountHBox"]
+layout_mode = 2
+
+[node name="RedCountLabel" type="Label" parent="CanvasLayer/Control/GlobalVBox/ParticleCountHBox/RedParticleCount"]
+layout_mode = 2
+text = "Red"
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="RedCountInput" type="SpinBox" parent="CanvasLayer/Control/GlobalVBox/ParticleCountHBox/RedParticleCount"]
+layout_mode = 2
+max_value = 250000000.0
+
+[node name="BlueParticleCount" type="VBoxContainer" parent="CanvasLayer/Control/GlobalVBox/ParticleCountHBox"]
+layout_mode = 2
+
+[node name="BlueCountLabel" type="Label" parent="CanvasLayer/Control/GlobalVBox/ParticleCountHBox/BlueParticleCount"]
+layout_mode = 2
+text = "Blue"
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="BlueCountInput" type="SpinBox" parent="CanvasLayer/Control/GlobalVBox/ParticleCountHBox/BlueParticleCount"]
+layout_mode = 2
+max_value = 250000000.0
+
+[node name="GreenParticleCount" type="VBoxContainer" parent="CanvasLayer/Control/GlobalVBox/ParticleCountHBox"]
+layout_mode = 2
+
+[node name="GreenCountLabel" type="Label" parent="CanvasLayer/Control/GlobalVBox/ParticleCountHBox/GreenParticleCount"]
+layout_mode = 2
+text = "Green"
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="GreenCountInput" type="SpinBox" parent="CanvasLayer/Control/GlobalVBox/ParticleCountHBox/GreenParticleCount"]
+layout_mode = 2
+max_value = 250000000.0
+
+[node name="YellowParticleCount" type="VBoxContainer" parent="CanvasLayer/Control/GlobalVBox/ParticleCountHBox"]
+layout_mode = 2
+
+[node name="YellowCountLabel" type="Label" parent="CanvasLayer/Control/GlobalVBox/ParticleCountHBox/YellowParticleCount"]
+layout_mode = 2
+text = "Yellow"
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="YellowCountInput" type="SpinBox" parent="CanvasLayer/Control/GlobalVBox/ParticleCountHBox/YellowParticleCount"]
+layout_mode = 2
+max_value = 250000000.0
+
+[node name="RulesRadiusVBox" type="VBoxContainer" parent="CanvasLayer/Control/GlobalVBox"]
+layout_mode = 2
+
+[node name="RedParametersVBox" type="VBoxContainer" parent="CanvasLayer/Control/GlobalVBox/RulesRadiusVBox"]
+layout_mode = 2
+
+[node name="RxRSliderHBox" type="HBoxContainer" parent="CanvasLayer/Control/GlobalVBox/RulesRadiusVBox/RedParametersVBox"]
+layout_mode = 2
+
+[node name="SliderTitle" type="Label" parent="CanvasLayer/Control/GlobalVBox/RulesRadiusVBox/RedParametersVBox/RxRSliderHBox"]
+layout_mode = 2
+text = "RxR"
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="HSlider" type="HSlider" parent="CanvasLayer/Control/GlobalVBox/RulesRadiusVBox/RedParametersVBox/RxRSliderHBox"]
+layout_mode = 2
+min_value = -20.0
+max_value = 20.0
+step = 0.1
+
+[node name="SliderValue" type="Label" parent="CanvasLayer/Control/GlobalVBox/RulesRadiusVBox/RedParametersVBox/RxRSliderHBox"]
+layout_mode = 2
+
+[node name="RxBSliderHBox" type="HBoxContainer" parent="CanvasLayer/Control/GlobalVBox/RulesRadiusVBox/RedParametersVBox"]
+layout_mode = 2
+
+[node name="SliderTitle" type="Label" parent="CanvasLayer/Control/GlobalVBox/RulesRadiusVBox/RedParametersVBox/RxBSliderHBox"]
+layout_mode = 2
+
+[node name="HSlider" type="HSlider" parent="CanvasLayer/Control/GlobalVBox/RulesRadiusVBox/RedParametersVBox/RxBSliderHBox"]
+layout_mode = 2
+
+[node name="SliderValue" type="Label" parent="CanvasLayer/Control/GlobalVBox/RulesRadiusVBox/RedParametersVBox/RxBSliderHBox"]
+layout_mode = 2
+
+[node name="RxGSliderHBox" type="HBoxContainer" parent="CanvasLayer/Control/GlobalVBox/RulesRadiusVBox/RedParametersVBox"]
+layout_mode = 2
+
+[node name="SliderTitle" type="Label" parent="CanvasLayer/Control/GlobalVBox/RulesRadiusVBox/RedParametersVBox/RxGSliderHBox"]
+layout_mode = 2
+
+[node name="HSlider" type="HSlider" parent="CanvasLayer/Control/GlobalVBox/RulesRadiusVBox/RedParametersVBox/RxGSliderHBox"]
+layout_mode = 2
+
+[node name="SliderValue" type="Label" parent="CanvasLayer/Control/GlobalVBox/RulesRadiusVBox/RedParametersVBox/RxGSliderHBox"]
+layout_mode = 2
+
+[node name="RxYSliderHBox" type="HBoxContainer" parent="CanvasLayer/Control/GlobalVBox/RulesRadiusVBox/RedParametersVBox"]
+layout_mode = 2
+
+[node name="SliderTitle" type="Label" parent="CanvasLayer/Control/GlobalVBox/RulesRadiusVBox/RedParametersVBox/RxYSliderHBox"]
+layout_mode = 2
+
+[node name="HSlider" type="HSlider" parent="CanvasLayer/Control/GlobalVBox/RulesRadiusVBox/RedParametersVBox/RxYSliderHBox"]
+layout_mode = 2
+
+[node name="SliderValue" type="Label" parent="CanvasLayer/Control/GlobalVBox/RulesRadiusVBox/RedParametersVBox/RxYSliderHBox"]
+layout_mode = 2
+
+[node name="RedRadiusHBox" type="HBoxContainer" parent="CanvasLayer/Control/GlobalVBox/RulesRadiusVBox/RedParametersVBox"]
+layout_mode = 2
+
+[node name="RadiusLabel" type="Label" parent="CanvasLayer/Control/GlobalVBox/RulesRadiusVBox/RedParametersVBox/RedRadiusHBox"]
+layout_mode = 2
+text = "Radius"
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="RadiusInput" type="SpinBox" parent="CanvasLayer/Control/GlobalVBox/RulesRadiusVBox/RedParametersVBox/RedRadiusHBox"]
+layout_mode = 2
+max_value = 300.0
+
+[node name="BlueParametersVBox" type="VBoxContainer" parent="CanvasLayer/Control/GlobalVBox/RulesRadiusVBox"]
+layout_mode = 2
+
+[node name="BxBSliderHBox" type="HBoxContainer" parent="CanvasLayer/Control/GlobalVBox/RulesRadiusVBox/BlueParametersVBox"]
+layout_mode = 2
+
+[node name="SliderTitle" type="Label" parent="CanvasLayer/Control/GlobalVBox/RulesRadiusVBox/BlueParametersVBox/BxBSliderHBox"]
+layout_mode = 2
+
+[node name="HSlider" type="HSlider" parent="CanvasLayer/Control/GlobalVBox/RulesRadiusVBox/BlueParametersVBox/BxBSliderHBox"]
+layout_mode = 2
+
+[node name="SliderValue" type="Label" parent="CanvasLayer/Control/GlobalVBox/RulesRadiusVBox/BlueParametersVBox/BxBSliderHBox"]
+layout_mode = 2
+
+[node name="BxRSliderHBox" type="HBoxContainer" parent="CanvasLayer/Control/GlobalVBox/RulesRadiusVBox/BlueParametersVBox"]
+layout_mode = 2
+
+[node name="SliderTitle" type="Label" parent="CanvasLayer/Control/GlobalVBox/RulesRadiusVBox/BlueParametersVBox/BxRSliderHBox"]
+layout_mode = 2
+
+[node name="HSlider" type="HSlider" parent="CanvasLayer/Control/GlobalVBox/RulesRadiusVBox/BlueParametersVBox/BxRSliderHBox"]
+layout_mode = 2
+
+[node name="SliderValue" type="Label" parent="CanvasLayer/Control/GlobalVBox/RulesRadiusVBox/BlueParametersVBox/BxRSliderHBox"]
+layout_mode = 2
+
+[node name="BxGSliderHBox" type="HBoxContainer" parent="CanvasLayer/Control/GlobalVBox/RulesRadiusVBox/BlueParametersVBox"]
+layout_mode = 2
+
+[node name="SliderTitle" type="Label" parent="CanvasLayer/Control/GlobalVBox/RulesRadiusVBox/BlueParametersVBox/BxGSliderHBox"]
+layout_mode = 2
+
+[node name="HSlider" type="HSlider" parent="CanvasLayer/Control/GlobalVBox/RulesRadiusVBox/BlueParametersVBox/BxGSliderHBox"]
+layout_mode = 2
+
+[node name="SliderValue" type="Label" parent="CanvasLayer/Control/GlobalVBox/RulesRadiusVBox/BlueParametersVBox/BxGSliderHBox"]
+layout_mode = 2
+
+[node name="BxYSliderHBox" type="HBoxContainer" parent="CanvasLayer/Control/GlobalVBox/RulesRadiusVBox/BlueParametersVBox"]
+layout_mode = 2
+
+[node name="SliderTitle" type="Label" parent="CanvasLayer/Control/GlobalVBox/RulesRadiusVBox/BlueParametersVBox/BxYSliderHBox"]
+layout_mode = 2
+
+[node name="HSlider" type="HSlider" parent="CanvasLayer/Control/GlobalVBox/RulesRadiusVBox/BlueParametersVBox/BxYSliderHBox"]
+layout_mode = 2
+
+[node name="SliderValue" type="Label" parent="CanvasLayer/Control/GlobalVBox/RulesRadiusVBox/BlueParametersVBox/BxYSliderHBox"]
+layout_mode = 2
+
+[node name="BlueRadiusHBox" type="HBoxContainer" parent="CanvasLayer/Control/GlobalVBox/RulesRadiusVBox/BlueParametersVBox"]
+layout_mode = 2
+
+[node name="RadiusLabel" type="Label" parent="CanvasLayer/Control/GlobalVBox/RulesRadiusVBox/BlueParametersVBox/BlueRadiusHBox"]
+layout_mode = 2
+text = "Radius"
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="RadiusInput" type="SpinBox" parent="CanvasLayer/Control/GlobalVBox/RulesRadiusVBox/BlueParametersVBox/BlueRadiusHBox"]
+layout_mode = 2
+max_value = 300.0
+
+[node name="GreenParametersVBox" type="VBoxContainer" parent="CanvasLayer/Control/GlobalVBox/RulesRadiusVBox"]
+layout_mode = 2
+
+[node name="GxGSliderHBox" type="HBoxContainer" parent="CanvasLayer/Control/GlobalVBox/RulesRadiusVBox/GreenParametersVBox"]
+layout_mode = 2
+
+[node name="SliderTitle" type="Label" parent="CanvasLayer/Control/GlobalVBox/RulesRadiusVBox/GreenParametersVBox/GxGSliderHBox"]
+layout_mode = 2
+
+[node name="HSlider" type="HSlider" parent="CanvasLayer/Control/GlobalVBox/RulesRadiusVBox/GreenParametersVBox/GxGSliderHBox"]
+layout_mode = 2
+
+[node name="SliderValue" type="Label" parent="CanvasLayer/Control/GlobalVBox/RulesRadiusVBox/GreenParametersVBox/GxGSliderHBox"]
+layout_mode = 2
+
+[node name="GxRSliderHBox" type="HBoxContainer" parent="CanvasLayer/Control/GlobalVBox/RulesRadiusVBox/GreenParametersVBox"]
+layout_mode = 2
+
+[node name="SliderTitle" type="Label" parent="CanvasLayer/Control/GlobalVBox/RulesRadiusVBox/GreenParametersVBox/GxRSliderHBox"]
+layout_mode = 2
+
+[node name="HSlider" type="HSlider" parent="CanvasLayer/Control/GlobalVBox/RulesRadiusVBox/GreenParametersVBox/GxRSliderHBox"]
+layout_mode = 2
+
+[node name="SliderValue" type="Label" parent="CanvasLayer/Control/GlobalVBox/RulesRadiusVBox/GreenParametersVBox/GxRSliderHBox"]
+layout_mode = 2
+
+[node name="GxBSliderHBox" type="HBoxContainer" parent="CanvasLayer/Control/GlobalVBox/RulesRadiusVBox/GreenParametersVBox"]
+layout_mode = 2
+
+[node name="SliderTitle" type="Label" parent="CanvasLayer/Control/GlobalVBox/RulesRadiusVBox/GreenParametersVBox/GxBSliderHBox"]
+layout_mode = 2
+
+[node name="HSlider" type="HSlider" parent="CanvasLayer/Control/GlobalVBox/RulesRadiusVBox/GreenParametersVBox/GxBSliderHBox"]
+layout_mode = 2
+
+[node name="SliderValue" type="Label" parent="CanvasLayer/Control/GlobalVBox/RulesRadiusVBox/GreenParametersVBox/GxBSliderHBox"]
+layout_mode = 2
+
+[node name="GxYSliderHBox" type="HBoxContainer" parent="CanvasLayer/Control/GlobalVBox/RulesRadiusVBox/GreenParametersVBox"]
+layout_mode = 2
+
+[node name="SliderTitle" type="Label" parent="CanvasLayer/Control/GlobalVBox/RulesRadiusVBox/GreenParametersVBox/GxYSliderHBox"]
+layout_mode = 2
+
+[node name="HSlider" type="HSlider" parent="CanvasLayer/Control/GlobalVBox/RulesRadiusVBox/GreenParametersVBox/GxYSliderHBox"]
+layout_mode = 2
+
+[node name="SliderValue" type="Label" parent="CanvasLayer/Control/GlobalVBox/RulesRadiusVBox/GreenParametersVBox/GxYSliderHBox"]
+layout_mode = 2
+
+[node name="GreenRadiusHBox" type="HBoxContainer" parent="CanvasLayer/Control/GlobalVBox/RulesRadiusVBox/GreenParametersVBox"]
+layout_mode = 2
+
+[node name="RadiusLabel" type="Label" parent="CanvasLayer/Control/GlobalVBox/RulesRadiusVBox/GreenParametersVBox/GreenRadiusHBox"]
+layout_mode = 2
+text = "Radius"
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="RadiusInput" type="SpinBox" parent="CanvasLayer/Control/GlobalVBox/RulesRadiusVBox/GreenParametersVBox/GreenRadiusHBox"]
+layout_mode = 2
+max_value = 300.0
+
+[node name="YellowParametersVBox" type="VBoxContainer" parent="CanvasLayer/Control/GlobalVBox/RulesRadiusVBox"]
+layout_mode = 2
+
+[node name="YxYSliderHBox" type="HBoxContainer" parent="CanvasLayer/Control/GlobalVBox/RulesRadiusVBox/YellowParametersVBox"]
+layout_mode = 2
+
+[node name="SliderTitle" type="Label" parent="CanvasLayer/Control/GlobalVBox/RulesRadiusVBox/YellowParametersVBox/YxYSliderHBox"]
+layout_mode = 2
+
+[node name="HSlider" type="HSlider" parent="CanvasLayer/Control/GlobalVBox/RulesRadiusVBox/YellowParametersVBox/YxYSliderHBox"]
+layout_mode = 2
+
+[node name="SliderValue" type="Label" parent="CanvasLayer/Control/GlobalVBox/RulesRadiusVBox/YellowParametersVBox/YxYSliderHBox"]
+layout_mode = 2
+
+[node name="YxRSliderHBox" type="HBoxContainer" parent="CanvasLayer/Control/GlobalVBox/RulesRadiusVBox/YellowParametersVBox"]
+layout_mode = 2
+
+[node name="SliderTitle" type="Label" parent="CanvasLayer/Control/GlobalVBox/RulesRadiusVBox/YellowParametersVBox/YxRSliderHBox"]
+layout_mode = 2
+
+[node name="HSlider" type="HSlider" parent="CanvasLayer/Control/GlobalVBox/RulesRadiusVBox/YellowParametersVBox/YxRSliderHBox"]
+layout_mode = 2
+
+[node name="SliderValue" type="Label" parent="CanvasLayer/Control/GlobalVBox/RulesRadiusVBox/YellowParametersVBox/YxRSliderHBox"]
+layout_mode = 2
+
+[node name="YxBSliderHBox" type="HBoxContainer" parent="CanvasLayer/Control/GlobalVBox/RulesRadiusVBox/YellowParametersVBox"]
+layout_mode = 2
+
+[node name="SliderTitle" type="Label" parent="CanvasLayer/Control/GlobalVBox/RulesRadiusVBox/YellowParametersVBox/YxBSliderHBox"]
+layout_mode = 2
+
+[node name="HSlider" type="HSlider" parent="CanvasLayer/Control/GlobalVBox/RulesRadiusVBox/YellowParametersVBox/YxBSliderHBox"]
+layout_mode = 2
+
+[node name="SliderValue" type="Label" parent="CanvasLayer/Control/GlobalVBox/RulesRadiusVBox/YellowParametersVBox/YxBSliderHBox"]
+layout_mode = 2
+
+[node name="YxGSliderHBox" type="HBoxContainer" parent="CanvasLayer/Control/GlobalVBox/RulesRadiusVBox/YellowParametersVBox"]
+layout_mode = 2
+
+[node name="SliderTitle" type="Label" parent="CanvasLayer/Control/GlobalVBox/RulesRadiusVBox/YellowParametersVBox/YxGSliderHBox"]
+layout_mode = 2
+
+[node name="HSlider" type="HSlider" parent="CanvasLayer/Control/GlobalVBox/RulesRadiusVBox/YellowParametersVBox/YxGSliderHBox"]
+layout_mode = 2
+
+[node name="SliderValue" type="Label" parent="CanvasLayer/Control/GlobalVBox/RulesRadiusVBox/YellowParametersVBox/YxGSliderHBox"]
+layout_mode = 2
+
+[node name="YellowRadiusHBox" type="HBoxContainer" parent="CanvasLayer/Control/GlobalVBox/RulesRadiusVBox/YellowParametersVBox"]
+layout_mode = 2
+
+[node name="RadiusLabel" type="Label" parent="CanvasLayer/Control/GlobalVBox/RulesRadiusVBox/YellowParametersVBox/YellowRadiusHBox"]
+layout_mode = 2
+text = "Radius"
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="RadiusInput" type="SpinBox" parent="CanvasLayer/Control/GlobalVBox/RulesRadiusVBox/YellowParametersVBox/YellowRadiusHBox"]
+layout_mode = 2
+max_value = 300.0
+
+[node name="DtHbox" type="HBoxContainer" parent="CanvasLayer/Control/GlobalVBox"]
+layout_mode = 2
+
+[node name="DtLabel" type="Label" parent="CanvasLayer/Control/GlobalVBox/DtHbox"]
+layout_mode = 2
+text = "Delta time"
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="DtInput" type="SpinBox" parent="CanvasLayer/Control/GlobalVBox/DtHbox"]
+layout_mode = 2
+max_value = 10.0
+step = 0.1
+
+[node name="SimControlsHBox" type="HBoxContainer" parent="CanvasLayer/Control/GlobalVBox"]
+layout_mode = 2
+
+[node name="StartStopButton" type="Button" parent="CanvasLayer/Control/GlobalVBox/SimControlsHBox"]
+layout_mode = 2
+
+[node name="TogglePauseButton" type="Button" parent="CanvasLayer/Control/GlobalVBox/SimControlsHBox"]
+layout_mode = 2
+
+[connection signal="value_changed" from="CanvasLayer/Control/GlobalVBox/RulesRadiusVBox/RedParametersVBox/RxRSliderHBox/HSlider" to="CanvasLayer/Control" method="_on_h_slider_value_changed"]
+[connection signal="pressed" from="CanvasLayer/Control/GlobalVBox/SimControlsHBox/StartStopButton" to="CanvasLayer/Control" method="_on_start_stop_button_pressed"]
+[connection signal="pressed" from="CanvasLayer/Control/GlobalVBox/SimControlsHBox/TogglePauseButton" to="CanvasLayer/Control" method="_on_toggle_pause_button_pressed"]
