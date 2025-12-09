@@ -11,6 +11,11 @@
 using namespace godot;
 
 void CudaParticlesRenderer::_bind_methods() {
+    ClassDB::bind_method(D_METHOD("start_simulation", "numRed", "numBlue", "numGreen", "numYellow", "simulationRules", "simulationRadiusOfInfluence", "width", "height", "deltaTime"), &CudaParticlesRenderer::start_simulation);
+    ClassDB::bind_method(D_METHOD("update_rules", "simulationRules"), &CudaParticlesRenderer::update_rules);
+    ClassDB::bind_method(D_METHOD("update_radius_of_influence", "simulationRadiusOfInfluence"), &CudaParticlesRenderer::update_radius_of_influence);
+    ClassDB::bind_method(D_METHOD("update_is_running"), &CudaParticlesRenderer::update_is_running);
+    ClassDB::bind_method(D_METHOD("stop_simulation"), &CudaParticlesRenderer::stop_simulation);
 }
 
 CudaParticlesRenderer::CudaParticlesRenderer() {
