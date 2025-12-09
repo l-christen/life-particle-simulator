@@ -21,6 +21,9 @@ namespace godot {
         // numParticles for current simulation
         uint32_t num_particles = 0;
 
+        // Delta time for simulation steps
+        float delta_time = 0.01f;
+
         // Width and height of the simulation area
         float sim_width = 1024.0f;
         float sim_height = 768.0f;
@@ -44,13 +47,15 @@ namespace godot {
         CudaParticlesRenderer();
         ~CudaParticlesRenderer();
 
-        // Delta time for simulation steps
-        float delta_time = 0.01f;
+        // Setter and getter for delta_time
+        float get_delta_time() const { return delta_time; }
+        void set_delta_time(float p_delta_time) { delta_time = p_delta_time; }
+
 
         void _ready() override;
         void _process(double delta) override;
-        void CudaParticlesRenderer::update_multimesh(ParticlesAoS& render_buffer);
-        void CudaParticlesRenderer::start_simulation(
+        void update_multimesh(ParticlesAoS& render_buffer);
+        void start_simulation(
             int numRed,
             int numBlue,
             int numGreen,
@@ -61,10 +66,10 @@ namespace godot {
             int height,
             float deltaTime
         );
-        void CudaParticlesRenderer::update_rules(PackedFloat32Array simulationRules);
-        void CudaParticlesRenderer::update_radius_of_influence(PackedFloat32Array simulationRadiusOfInfluence);
-        void CudaParticlesRenderer::update_is_running();
-        void CudaParticlesRenderer::stop_simulation();
+        void update_rules(PackedFloat32Array simulationRules);
+        void update_radius_of_influence(PackedFloat32Array simulationRadiusOfInfluence);
+        void update_is_running();
+        void stop_simulation();
     };
 }
 
