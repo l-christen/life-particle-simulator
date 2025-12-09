@@ -9,7 +9,7 @@
 extern "C" {
 #endif
 
-extern "C" void initSimulation(
+void initSimulation(
     ParticlesSoA* prev,
     ParticlesSoA* next,
     ParticlesAoS* render,
