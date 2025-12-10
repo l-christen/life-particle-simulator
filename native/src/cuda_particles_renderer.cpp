@@ -1,33 +1,58 @@
 #include "cuda_particles_renderer.h"
-#include "simulation.cuh"
+
 
 #include <godot_cpp/core/class_db.hpp>
 #include <godot_cpp/classes/multi_mesh.hpp>
 #include <godot_cpp/classes/multi_mesh_instance2d.hpp>
 #include <godot_cpp/classes/quad_mesh.hpp>
 #include <godot_cpp/classes/node2d.hpp>
+#include <godot_cpp/variant/packed_float32_array.hpp>
+#include <godot_cpp/core/property_info.hpp>
+
+#include "simulation.cuh"
+#include "compute_buffers.h"
 
 
 using namespace godot;
 
+// Binding methods for GDExtension, only static methods can be bound
 void CudaParticlesRenderer::_bind_methods() {
-    ClassDB::bind_method(D_METHOD("start_simulation", "numRed", "numBlue", "numGreen", "numYellow", "simulationRules", "simulationRadiusOfInfluence", "width", "height", "deltaTime"), &CudaParticlesRenderer::start_simulation);
-    ClassDB::bind_method(D_METHOD("update_rules", "simulationRules"), &CudaParticlesRenderer::update_rules);
-    ClassDB::bind_method(D_METHOD("update_radius_of_influence", "simulationRadiusOfInfluence"), &CudaParticlesRenderer::update_radius_of_influence);
-    ClassDB::bind_method(D_METHOD("update_is_running"), &CudaParticlesRenderer::update_is_running);
-    ClassDB::bind_method(D_METHOD("stop_simulation"), &CudaParticlesRenderer::stop_simulation);
-    ClassDB::add_property<CudaParticlesRenderer, float>("delta_time", &CudaParticlesRenderer::delta_time, 0.01f);
+    ClassDB::bind_static_method("CudaParticlesRenderer", 
+        D_METHOD("start_simulation", "numRed", "numBlue", "numGreen", "numYellow", "simulationRules", "simulationRadiusOfInfluence", "width", "height", "deltaTime"), 
+        &CudaParticlesRenderer::_start_simulation_bind);
+    
+    ClassDB::bind_static_method("CudaParticlesRenderer", 
+        D_METHOD("update_rules", "simulationRules"), 
+        &CudaParticlesRenderer::_update_rules_bind);
+    
+    ClassDB::bind_static_method("CudaParticlesRenderer", 
+        D_METHOD("update_radius_of_influence", "simulationRadiusOfInfluence"), 
+        &CudaParticlesRenderer::_update_radius_of_influence_bind);
+    
+    ClassDB::bind_static_method("CudaParticlesRenderer", 
+        D_METHOD("update_is_running"), 
+        &CudaParticlesRenderer::_update_is_running_bind);
+    
+    ClassDB::bind_static_method("CudaParticlesRenderer", 
+        D_METHOD("stop_simulation"), 
+        &CudaParticlesRenderer::_stop_simulation_bind);
+
+    ClassDB::bind_static_method("CudaParticlesRenderer", 
+        D_METHOD("update_delta_time", "p_delta_time"), 
+        &CudaParticlesRenderer::_update_delta_time_bind);
 }
 
 CudaParticlesRenderer::CudaParticlesRenderer() {
 }
 
 CudaParticlesRenderer::~CudaParticlesRenderer() {
+    // Free compute buffers
     if (compute) {
         delete compute;
     }
 }
 
+// Called when the node is added to the scene
 void CudaParticlesRenderer::_ready() {
     UtilityFunctions::print("CudaParticlesRenderer is ready!");
 
@@ -51,6 +76,7 @@ void CudaParticlesRenderer::_ready() {
     add_child(instance);
 }
 
+// Called every frame
 void CudaParticlesRenderer::_process(double delta) {
     if (!is_initialized) {
         return;
@@ -67,6 +93,7 @@ void CudaParticlesRenderer::_process(double delta) {
     }
 }
 
+// Update the multimesh instance with the latest particle data
 void CudaParticlesRenderer::update_multimesh(ParticlesAoS& render_buffer)
 {
     int count = render_buffer.numParticles;
@@ -103,6 +130,7 @@ void CudaParticlesRenderer::update_multimesh(ParticlesAoS& render_buffer)
     }
 }
 
+// Start the simulation with given parameters
 void CudaParticlesRenderer::start_simulation(
     int numRed,
     int numBlue,
@@ -114,7 +142,7 @@ void CudaParticlesRenderer::start_simulation(
     int height,
     float deltaTime
 ) {
-
+    UtilityFunctions::print("Starting simulation");
     // Set the number of particles
     num_particles = numRed + numBlue + numGreen + numYellow;
 
