@@ -1,6 +1,5 @@
 #pragma once
 
-#include <cuda_runtime.h>
 #include <cstdint>
 
 /*
@@ -12,11 +11,11 @@ which are stored contiguously in memory, leading to better coalesced memory acce
 
 struct ParticlesSoA {
     uint32_t numParticles; // number of particles in the buffer
-    uint32_t capacity;     // maximum number of particles the buffer can hold
+    uint32_t capacity; // maximum number of particles the buffer can hold
 
-    float* d_x;           // device pointer to x positions
-    float* d_y;           // device pointer to y positions
-    float* d_vx;          // device pointer to x velocities
-    float* d_vy;          // device pointer to y velocities
-    uint32_t* d_type;     // device pointer to particle types
+    float* d_x; // device pointer to x positions
+    float* d_y; // device pointer to y positions
+    float* d_vx; // device pointer to x velocities
+    float* d_vy; // device pointer to y velocities
+    uint32_t* d_type; // device pointer to particle types
 };
