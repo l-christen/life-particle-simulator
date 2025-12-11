@@ -4,7 +4,6 @@
 #include "particlesAoS.cuh"
 #include "particle.h"
 
-#include <utility>
 #include <cstdint>
 #include <cstdlib>
 
@@ -21,7 +20,10 @@ public:
 
     // Swap prev and next buffers when a simulation step is complete (better than copying data)
     void swap() {
-        std::swap(prev, next);
+        // Swap the buffer pointers
+        ParticlesSoA temp = prev;
+        prev = next;
+        next = temp;
     }
 
 private:
