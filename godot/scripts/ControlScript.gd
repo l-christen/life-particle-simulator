@@ -61,7 +61,7 @@ func update_ui_for_state():
 		SimState.RUNNING:
 			particle_count_panel.visible = false
 			rules_radius_panel.visible = false
-			dt_input_panel.visible = true
+			dt_input_panel.visible = false
 			toggle_pause_button.visible = true
 			toggle_pause_button.text = "Pause"
 			start_stop_button.visible = true
@@ -229,7 +229,7 @@ func _on_parameter_input_changed(_new_value):
 		
 		particle_renderer.update_rules(rules_array)
 		particle_renderer.update_radius_of_influence(radius_array)
-		particle_renderer.deltaTime = dt_value
+		particle_renderer.update_delta_time(dt_value)
 		
 
 # Method called when a slider value change to modify the value in the slider label
