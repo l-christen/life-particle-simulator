@@ -11,3 +11,5 @@ godot/bin/
 native/.sconsign.dblite
 
 *.obj
+*.o
+*.os
