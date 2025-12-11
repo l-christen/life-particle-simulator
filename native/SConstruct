@@ -90,6 +90,8 @@ env.Append(LIBS=[f"libgodot-cpp.{platform}.{target}.x86_64"])
 # --------------------------------------------------------------
 # CUDA BUILDER
 # --------------------------------------------------------------
+compatible_ccbin = "/usr/bin/g++-11"
+
 if platform == "windows":
     # Helper to get the 8.3 short path name
     def get_short_path(long_path):
@@ -113,16 +115,17 @@ if platform == "windows":
         '-Xcompiler "/FS"',
         '-Xcompiler "/std:c++17"'
     ]
+    cuda_obj_suffix = "$SHOBJSUFFIX"  # Use SCons shared object suffix
 
 else: # Linux
     cuda_path_nvcc = cuda_path_normalized
     # GCC Host Compiler Flags passed to NVCC
     cuda_host_compiler_flags = [
-        '-Xcompiler "-fPIC"', 
         '-Xcompiler "-std=c++17"'
     ]
     if is_debug:
         cuda_host_compiler_flags.append('-Xcompiler "-g"')
+    cuda_obj_suffix = "$SHOBJSUFFIX"  # Use SCons shared object suffix
 
 cuda_includes = [
     f"{cuda_path_nvcc}/include",
@@ -136,19 +139,25 @@ cuda_includes = [
 cuda_include_flags = " ".join([f'-I"{p}"' for p in cuda_includes])
 cuda_host_flags = " ".join(cuda_host_compiler_flags)
 
+nvcc_ccbin_flag = f'-ccbin "{compatible_ccbin}"' if platform == "linux" else ""
+nvcc_pic_flag = '-Xcompiler "-fPIC"' if platform == "linux" else ""
+
+# Use SharedObject builder for CUDA files
 cuda_builder = Builder(
-    # NVCC Action: Compile the .cu file into an object file
     action=(
         f'"{nvcc}" --allow-unsupported-compiler '
+        f'{nvcc_ccbin_flag} '
+        f'{nvcc_pic_flag} '
         f'-c "${{SOURCE.abspath}}" -o "${{TARGET.abspath}}" '
         f'-std=c++17 -arch=sm_75 {cuda_include_flags} '
         f'{cuda_host_flags}'
     ),
-    suffix=".obj",
-    src_suffix=".cu"
+    suffix=cuda_obj_suffix,
+    src_suffix=".cu",
+    single_source=True
 )
 
-env.Append(BUILDERS={"CudaObject": cuda_builder})
+env.Append(BUILDERS={"CudaSharedObject": cuda_builder})
 
 # Linker paths for CUDA runtime library
 if platform == "windows":
@@ -171,8 +180,16 @@ cpp_sources = [
 ]
 cu_sources = Glob("src/*.cu")
 
-# Build CUDA objects first
-cuda_objects = [env.CudaObject(str(s)) for s in cu_sources]
+# Build CUDA shared objects
+cuda_objects = []
+for cu_file in cu_sources:
+    # Build the CUDA object
+    obj = env.CudaSharedObject(str(cu_file))
+    # Mark it explicitly as a shared object node to prevent SCons from treating it as static
+    for o in obj:
+        o.attributes.shared = 1
+    cuda_objects.extend(obj)
+
 all_sources = cpp_sources + cuda_objects
 
 # --------------------------------------------------------------
