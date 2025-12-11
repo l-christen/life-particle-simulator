@@ -1,6 +1,8 @@
+# This file has been written with a lot of help from Gemini
+
 extends Control
 
-
+# Get Nodes when they are instantiates
 @onready var particle_renderer = $"../..//CudaParticlesRenderer"
 
 @onready var particle_count_panel = $GlobalVBox/ParticleCountHBox
@@ -8,27 +10,32 @@ extends Control
 
 @onready var start_stop_button = $GlobalVBox/SimControlsHBox/StartStopButton
 @onready var toggle_pause_button = $GlobalVBox/SimControlsHBox/TogglePauseButton
-@onready var dt_input_panel = $GlobalVBox/DTHBox
+@onready var dt_input_panel = $GlobalVBox/DtHbox
 
+# 3 possibles simulation states
 enum SimState { IDLE, RUNNING, PAUSED }
 var current_state = SimState.IDLE
 
 var sim_width: int
 var sim_height: int
 
+# Panel width, absolute for now
 const UI_PANEL_WIDTH: int = 350
 
 
 # Called when the node enters the scene tree for the first time.
 func _ready() -> void:
+	# Initialize sim_height and sim_width
 	sim_width = DisplayServer.window_get_size().x
 	sim_height = DisplayServer.window_get_size().y - UI_PANEL_WIDTH
 	
 	setup_slider_ranges()
 	
+	# Connect sliders and spinboxes to the eventlistener
 	_connect_sliders()
 	_connect_spinboxes()
 	
+	# Update UI components visibility
 	update_ui_for_state()
 
 
@@ -36,6 +43,7 @@ func _ready() -> void:
 func _process(_delta: float) -> void:
 	pass
 
+# Function to control components visibility according to simulation state
 func update_ui_for_state():
 	var dt_input_node = dt_input_panel.get_node("DtInput")
 
@@ -73,16 +81,19 @@ func update_ui_for_state():
 			
 			dt_input_node.editable = true
 			
-
+# Logic for the start stop button
 func _on_start_stop_button_pressed():
 	if current_state == SimState.IDLE:
 		var params = collect_simulation_parameters()
+		# Debug print
+		print(params)
 
 		var total_particles = params.num_red + params.num_blue + params.num_green + params.num_yellow
 		if total_particles == 0:
-			print("Erreur: Le nombre total de particules doit être supérieur à zéro.")
+			print("Error: The number of particles has to be greater than 0.")
 			return
-
+		
+		# Call the binded method from GDExtension
 		particle_renderer.start_simulation(
 			params.num_red,
 			params.num_blue,
@@ -94,8 +105,9 @@ func _on_start_stop_button_pressed():
 			sim_height,
 			params.dt
 			)
+		print("Sim started")
 		
-		# Passer à l'état d'exécution
+		# Modify simulation state
 		current_state = SimState.RUNNING
 		update_ui_for_state()
 		
@@ -104,7 +116,8 @@ func _on_start_stop_button_pressed():
 		
 		current_state = SimState.IDLE
 		update_ui_for_state()
-		
+
+# Logig for the play pause button
 func _on_toggle_pause_button_pressed():
 	if current_state == SimState.RUNNING:
 		particle_renderer.update_is_running()
@@ -116,6 +129,7 @@ func _on_toggle_pause_button_pressed():
 		current_state = SimState.RUNNING
 		update_ui_for_state()
 
+# Get the numerical values from spinboxes or linedit
 func get_numerical_input(path_to_input_node) -> float:
 	var input_node = get_node(path_to_input_node)
 	if input_node is SpinBox:
@@ -125,14 +139,15 @@ func get_numerical_input(path_to_input_node) -> float:
 			return float(input_node.text)
 	return 0.0
 
+# Get numerical values from sliders
 func get_slider_rules() -> PackedFloat32Array:
 	var rules_array = PackedFloat32Array()
 	
 	var color_data = [
-		{"key": "R", "vbox": $GlobalVBox/RulesRadiusVBox/RedParametersVBox},
-		{"key": "B", "vbox": $GlobalVBox/RulesRadiusVBox/BlueParametersVBox},
-		{"key": "G", "vbox": $GlobalVBox/RulesRadiusVBox/GreenParametersVBox},
-		{"key": "Y", "vbox": $GlobalVBox/RulesRadiusVBox/YellowParametersVBox}
+		{"key": "R", "vbox": $GlobalVBox/RulesRadiusVBox/RedContainer/RedParametersVBox},
+		{"key": "B", "vbox": $GlobalVBox/RulesRadiusVBox/BlueContainer/BlueParametersVBox},
+		{"key": "G", "vbox": $GlobalVBox/RulesRadiusVBox/GreenContainer/GreenParametersVBox},
+		{"key": "Y", "vbox": $GlobalVBox/RulesRadiusVBox/YellowContainer/YellowParametersVBox}
 	]
 	var target_order = ["R", "B", "G", "Y"] 
 	
@@ -154,14 +169,15 @@ func get_slider_rules() -> PackedFloat32Array:
 				
 	return rules_array
 
+# Get numerical values for the radius of influence
 func get_radius_of_influence() -> PackedFloat32Array:
 	var radius_array = PackedFloat32Array()
 	
 	var color_order = [
-		{"name": "Red", "vbox": $GlobalVBox/RulesRadiusVBox/RedParametersVBox},
-		{"name": "Blue", "vbox": $GlobalVBox/RulesRadiusVBox/BlueParametersVBox},
-		{"name": "Green", "vbox": $GlobalVBox/RulesRadiusVBox/GreenParametersVBox},
-		{"name": "Yellow", "vbox": $GlobalVBox/RulesRadiusVBox/YellowParametersVBox}
+		{"name": "Red", "vbox": $GlobalVBox/RulesRadiusVBox/RedContainer/RedParametersVBox},
+		{"name": "Blue", "vbox": $GlobalVBox/RulesRadiusVBox/BlueContainer/BlueParametersVBox},
+		{"name": "Green", "vbox": $GlobalVBox/RulesRadiusVBox/GreenContainer/GreenParametersVBox},
+		{"name": "Yellow", "vbox": $GlobalVBox/RulesRadiusVBox/YellowContainer/YellowParametersVBox}
 	]
 	
 	for color in color_order:
@@ -178,10 +194,11 @@ func get_radius_of_influence() -> PackedFloat32Array:
 			radius_array.append(radius_value)
 		else:
 			radius_array.append(0.0)
-			print("Erreur: Nœud d'entrée de rayon non trouvé pour %s." % color_name)
+			print("Erreur: Node not found for %s." % color_name)
 			
 	return radius_array
-	
+
+# Main function to collect all parameters
 func collect_simulation_parameters() -> Dictionary:
 	var num_red = get_numerical_input(str(particle_count_panel.get_path()) + "/RedParticleCount/RedCountInput")
 	var num_blue = get_numerical_input(str(particle_count_panel.get_path()) + "/BlueParticleCount/BlueCountInput")
@@ -203,6 +220,7 @@ func collect_simulation_parameters() -> Dictionary:
 		"dt": dt_value
 	}
 
+# Method called when a value change in the UI
 func _on_parameter_input_changed(_new_value):
 	if current_state == SimState.PAUSED:
 		var rules_array = get_slider_rules()
@@ -214,28 +232,28 @@ func _on_parameter_input_changed(_new_value):
 		particle_renderer.deltaTime = dt_value
 		
 
-func _on_h_slider_value_changed(value: float) -> void:
-	var slider_node = get_tree().get_last_shouted_node()
-	
+# Method called when a slider value change to modify the value in the slider label
+func _on_h_slider_value_changed(value: float, slider_node: HSlider) -> void:
 	if slider_node and slider_node is HSlider:
 		var value_label = slider_node.get_node("../SliderValue")
 		if value_label and value_label is Label:
-			value_label.text = "%.5f" % value
+			value_label.text = "%.2f" % value
 			
 			if current_state == SimState.PAUSED:
 				_on_parameter_input_changed(value)
-		value_label.text = "%.5f" % value
+		value_label.text = "%.2f" % value
 
+# Method to setup sliders on _ready
 func setup_slider_ranges():
 	const MIN_RULE_VALUE: float = -20.0
 	const MAX_RULE_VALUE: float = 20.0
 	const SLIDER_STEP: float = 0.1
 	
 	var color_vboxes = [
-		$GlobalVBox/RulesRadiusVBox/RedParametersVBox,
-		$GlobalVBox/RulesRadiusVBox/BlueParametersVBox,
-		$GlobalVBox/RulesRadiusVBox/GreenParametersVBox,
-		$GlobalVBox/RulesRadiusVBox/YellowParametersVBox
+		$GlobalVBox/RulesRadiusVBox/RedContainer/RedParametersVBox,
+		$GlobalVBox/RulesRadiusVBox/BlueContainer/BlueParametersVBox,
+		$GlobalVBox/RulesRadiusVBox/GreenContainer/GreenParametersVBox,
+		$GlobalVBox/RulesRadiusVBox/YellowContainer/YellowParametersVBox
 	]
 	
 	for color_vbox in color_vboxes:
@@ -249,12 +267,13 @@ func setup_slider_ranges():
 				slider.step = SLIDER_STEP
 				slider.value = 0.0
 
+# Method to connect sliders to their eventlistener
 func _connect_sliders():
 	var color_vboxes = [
-		$GlobalVBox/RulesRadiusVBox/RedParametersVBox,
-		$GlobalVBox/RulesRadiusVBox/BlueParametersVBox,
-		$GlobalVBox/RulesRadiusVBox/GreenParametersVBox,
-		$GlobalVBox/RulesRadiusVBox/YellowParametersVBox
+		$GlobalVBox/RulesRadiusVBox/RedContainer/RedParametersVBox,
+		$GlobalVBox/RulesRadiusVBox/BlueContainer/BlueParametersVBox,
+		$GlobalVBox/RulesRadiusVBox/GreenContainer/GreenParametersVBox,
+		$GlobalVBox/RulesRadiusVBox/YellowContainer/YellowParametersVBox
 	]
 	
 	for color_vbox in color_vboxes:
@@ -262,28 +281,29 @@ func _connect_sliders():
 			var slider = child.get_node_or_null("HSlider")
 			
 			if slider and slider is HSlider:
-				if not slider.is_connected("value_changed", Callable(self, "_on_h_slider_value_changed")):
-					slider.connect("value_changed", Callable(self, "_on_h_slider_value_changed"))
+				var callable = Callable(self, "_on_h_slider_value_changed").bind(slider)
+				if not slider.is_connected("value_changed", callable):
+					slider.connect("value_changed", callable)
 
-# Placez cette fonction dans votre script d'UI Manager
+# Method to connect spinboxes to their eventlistener (usefull to modify simulation parameters when state is PAUSED)
 func _connect_spinboxes():
-	# 1. SpinBoxes de Rayon (4x)
 	var radius_vboxes = [
-		$GlobalVBox/RulesRadiusVBox/RedParametersVBox,
-		# ... Blue, Green, YellowParametersVBox
+		$GlobalVBox/RulesRadiusVBox/RedContainer/RedParametersVBox,
+		$GlobalVBox/RulesRadiusVBox/BlueContainer/BlueParametersVBox,
+		$GlobalVBox/RulesRadiusVBox/GreenContainer/GreenParametersVBox,
+		$GlobalVBox/RulesRadiusVBox/YellowContainer/YellowParametersVBox
 	]
 	for vbox in radius_vboxes:
-		var input_node = vbox.get_node_or_null("RedRadiusHBox/RadiusInput") # Chemin selon la couleur
+		var input_node = vbox.get_node_or_null("RedRadiusHBox/RadiusInput")
 		if input_node and input_node is SpinBox:
 			if not input_node.is_connected("value_changed", Callable(self, "_on_parameter_input_changed")):
 				input_node.connect("value_changed", Callable(self, "_on_parameter_input_changed"))
 
-	# 2. SpinBoxes de Compte de Particules (4x)
 	var count_nodes = [
 		$GlobalVBox/ParticleCountHBox/RedParticleCount/RedCountInput,
-		$GlobalVBox/ParticleCountHBox/RedParticleCount/BlueCountInput,
-		$GlobalVBox/ParticleCountHBox/RedParticleCount/GreenCountInput,
-		$GlobalVBox/ParticleCountHBox/RedParticleCount/YellowCountInput,
+		$GlobalVBox/ParticleCountHBox/BlueParticleCount/BlueCountInput,
+		$GlobalVBox/ParticleCountHBox/GreenParticleCount/GreenCountInput,
+		$GlobalVBox/ParticleCountHBox/YellowParticleCount/YellowCountInput,
 	]
 	for node in count_nodes:
 		if node and node is SpinBox:

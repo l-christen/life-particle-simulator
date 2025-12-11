@@ -8,24 +8,33 @@ var sim_width: float = 0.0
 var sim_height: float = 0.0
 
 func _ready():
-	sim_width = DisplayServer.window_get_size().x - UI_PANEL_WIDTH
-	sim_height = DisplayServer.window_get_size().y
+	var screen_width = DisplayServer.window_get_size().x
+	var screen_height = DisplayServer.window_get_size().y
 	
-	position = Vector2(sim_width / 2.0, sim_height / 2.0)
+	sim_width = screen_width - UI_PANEL_WIDTH
+	sim_height = screen_height
+	
+	var center_x = UI_PANEL_WIDTH + (sim_width / 2.0)
+	var center_y = sim_height / 2.0
+	
+	# Camera centered in the middle of the simulation
+	position = Vector2(center_x, center_y) 
+	offset = Vector2(0, 0)
 
-	limit_left = 0
+	# This limit are set because of the UI
+	limit_left = int(UI_PANEL_WIDTH)
 	limit_top = 0
-	limit_right = int(sim_width)
+	limit_right = int(screen_width) 
 	limit_bottom = int(sim_height)
-	
-	offset = Vector2(UI_PANEL_WIDTH / 2.0, 0)
 
+# Zoom method
 func zoom():
 	if Input.is_action_just_released('wheel_down'):
 		set_zoom(get_zoom() - Vector2(ZOOM_STEP, ZOOM_STEP))
 	if Input.is_action_just_released('wheel_up'):
 		set_zoom(get_zoom() + Vector2(ZOOM_STEP, ZOOM_STEP))
 
+# Method called each frame to move the camera
 func _process(delta):
 	var dir = Vector2.ZERO
 
