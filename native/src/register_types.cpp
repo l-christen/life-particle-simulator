@@ -1,8 +1,12 @@
+// This file is a template file from Godot's GDNative module examples.
+// It has been adapted for the life-particle-simulator plugin.
+
 #include "register_types.h"
 
 #include "cuda_particles_renderer.h"
 
 #include <gdextension_interface.h>
+#include <godot_cpp/core/class_db.hpp>
 #include <godot_cpp/core/defs.hpp>
 #include <godot_cpp/godot.hpp>
 

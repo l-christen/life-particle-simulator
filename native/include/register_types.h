@@ -1,3 +1,6 @@
+// This file is a template file from Godot's GDNative module examples.
+// It has been adapted for the life-particle-simulator plugin.
+
 #ifndef GDEXTENSION_REGISTER_TYPES_H
 #define GDEXTENSION_REGISTER_TYPES_H
 
