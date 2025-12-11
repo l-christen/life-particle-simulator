@@ -17,29 +17,22 @@ using namespace godot;
 
 // Binding methods for GDExtension, only static methods can be bound
 void CudaParticlesRenderer::_bind_methods() {
-    ClassDB::bind_static_method("CudaParticlesRenderer", 
-        D_METHOD("start_simulation", "numRed", "numBlue", "numGreen", "numYellow", "simulationRules", "simulationRadiusOfInfluence", "width", "height", "deltaTime"), 
-        &CudaParticlesRenderer::_start_simulation_bind);
+    ClassDB::bind_method(D_METHOD("start_simulation", "numRed", "numBlue", "numGreen", "numYellow", "simulationRules", "simulationRadiusOfInfluence", "width", "height", "deltaTime"), 
+        &CudaParticlesRenderer::start_simulation);
     
-    ClassDB::bind_static_method("CudaParticlesRenderer", 
-        D_METHOD("update_rules", "simulationRules"), 
-        &CudaParticlesRenderer::_update_rules_bind);
+    ClassDB::bind_method(D_METHOD("update_rules", "simulationRules"), 
+        &CudaParticlesRenderer::update_rules);
     
-    ClassDB::bind_static_method("CudaParticlesRenderer", 
-        D_METHOD("update_radius_of_influence", "simulationRadiusOfInfluence"), 
-        &CudaParticlesRenderer::_update_radius_of_influence_bind);
+    ClassDB::bind_method(D_METHOD("update_radius_of_influence", "simulationRadiusOfInfluence"), 
+        &CudaParticlesRenderer::update_radius_of_influence);
     
-    ClassDB::bind_static_method("CudaParticlesRenderer", 
-        D_METHOD("update_is_running"), 
-        &CudaParticlesRenderer::_update_is_running_bind);
+    ClassDB::bind_method(D_METHOD("update_is_running"), 
+        &CudaParticlesRenderer::update_is_running);
     
-    ClassDB::bind_static_method("CudaParticlesRenderer", 
-        D_METHOD("stop_simulation"), 
-        &CudaParticlesRenderer::_stop_simulation_bind);
-
-    ClassDB::bind_static_method("CudaParticlesRenderer", 
-        D_METHOD("update_delta_time", "p_delta_time"), 
-        &CudaParticlesRenderer::_update_delta_time_bind);
+    ClassDB::bind_method(D_METHOD("stop_simulation"), 
+        &CudaParticlesRenderer::stop_simulation);
+    ClassDB::bind_method(D_METHOD("update_delta_time", "p_delta_time"), 
+        &CudaParticlesRenderer::update_delta_time);
 }
 
 CudaParticlesRenderer::CudaParticlesRenderer() {
@@ -84,7 +77,7 @@ void CudaParticlesRenderer::_process(double delta) {
     if (is_initialized && is_running) {
         // Run simulation step
         runSimulationStep(&compute->prev, &compute->next, &compute->renderBuffer, num_particles, sim_width, sim_height, delta_time);
-
+    
         // Swap buffers for next iteration
         compute->swap();
 
@@ -108,19 +101,18 @@ void CudaParticlesRenderer::update_multimesh(ParticlesAoS& render_buffer)
         multimesh->set_instance_transform_2d(i, transform);
         Color col;
         switch (particles[i].type) {
-            case 1: // RED
+            case 0: // RED
                 col = Color(1.0f, 0.2f, 0.2f, 1.0f);
                 break;
-            case 2: // BLUE
+            case 1: // BLUE
                 col = Color(0.2f, 0.4f, 1.0f, 1.0f);
                 break;
-            case 3: // GREEN
+            case 2: // GREEN
                 col = Color(0.2f, 1.0f, 0.4f, 1.0f);
                 break;
-            case 4: // YELLOW
+            case 3: // YELLOW
                 col = Color(1.0f, 1.0f, 0.3f, 1.0f);
                 break;
-            case 0:
             default:
                 col = Color(0.0f, 0.0f, 0.0f, 0.0f);
                 break;

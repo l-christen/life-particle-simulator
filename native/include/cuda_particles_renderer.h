@@ -14,33 +14,6 @@ namespace godot {
         GDCLASS(CudaParticlesRenderer, Node2D)
     
     private:
-        // Binding methods for GDExtension exposure, only way found to bind methods
-        static void _start_simulation_bind(CudaParticlesRenderer* obj, int numRed, int numBlue, int numGreen, int numYellow, 
-                                        PackedFloat32Array simulationRules, PackedFloat32Array simulationRadiusOfInfluence, 
-                                        int width, int height, float deltaTime) {
-            obj->start_simulation(numRed, numBlue, numGreen, numYellow, simulationRules, simulationRadiusOfInfluence, width, height, deltaTime);
-        }
-        
-        static void _update_rules_bind(CudaParticlesRenderer* obj, PackedFloat32Array simulationRules) {
-            obj->update_rules(simulationRules);
-        }
-        
-        static void _update_radius_of_influence_bind(CudaParticlesRenderer* obj, PackedFloat32Array simulationRadiusOfInfluence) {
-            obj->update_radius_of_influence(simulationRadiusOfInfluence);
-        }
-        
-        static void _update_is_running_bind(CudaParticlesRenderer* obj) {
-            obj->update_is_running();
-        }
-        
-        static void _stop_simulation_bind(CudaParticlesRenderer* obj) {
-            obj->stop_simulation();
-        }
-        
-        static void _update_delta_time_bind(CudaParticlesRenderer* obj, float delta_time) {
-            obj->update_delta_time(delta_time);
-        }
-
         // Simulation and rendering buffers
         ComputeBuffers* compute = nullptr;
 
