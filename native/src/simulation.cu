@@ -62,19 +62,19 @@ extern "C" void initSimulation(
         h_vy[i] = 0.0f;
         uint32_t type = 0;
         if (countRed < numRed) {
-            type = 1; // Red
+            type = 0; // Red
             countRed++;
         }
         else if (countBlue < numBlue) {
-            type = 2; // Blue
+            type = 1; // Blue
             countBlue++;
         }
         else if (countGreen < numGreen) {
-            type = 3; // Green
+            type = 2; // Green
             countGreen++;
         }
         else if (countYellow < numYellow) {
-            type = 4; // Yellow
+            type = 3; // Yellow
             countYellow++;
         }
         h_type[i] = type;
@@ -202,6 +202,6 @@ extern "C" void setSimulationRules(const float* rules) {
     cudaMemcpyToSymbol(particleRules, rules, sizeof(float) * NUM_PARTICLE_TYPES * NUM_PARTICLE_TYPES);
 }
 
-extern "C" void setSimulationRadiusOfInfluence(const float* radiusOfInfluence) {
-    cudaMemcpyToSymbol(radiusOfInfluence, radiusOfInfluence, sizeof(float) * NUM_PARTICLE_TYPES);
+extern "C" void setSimulationRadiusOfInfluence(const float* radius) {
+    cudaMemcpyToSymbol(radiusOfInfluence, radius, sizeof(float) * NUM_PARTICLE_TYPES);
 }
