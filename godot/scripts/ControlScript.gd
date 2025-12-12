@@ -10,7 +10,7 @@ extends Control
 
 @onready var start_stop_button = $GlobalVBox/SimControlsHBox/StartStopButton
 @onready var toggle_pause_button = $GlobalVBox/SimControlsHBox/TogglePauseButton
-@onready var dt_viscosity_input_panel = $GlobalVBox/DtViscosityHBox
+@onready var dt_viscosity_input_panel = $GlobalVBox/DtViscosityHbox
 
 # 3 possibles simulation states
 enum SimState { IDLE, RUNNING, PAUSED }
@@ -323,7 +323,7 @@ func _connect_spinboxes():
 		if not dt_node.is_connected("value_changed", Callable(self, "_on_parameter_input_changed")):
 			dt_node.connect("value_changed", Callable(self, "_on_parameter_input_changed"))
 
-	var viscosity_node = dt_viscosity_input_panel.get_node_or_null("DtViscosity")
+	var viscosity_node = dt_viscosity_input_panel.get_node_or_null("ViscosityInput")
 	if viscosity_node and viscosity_node is SpinBox:
 		if not viscosity_node.is_connected("value_changed", Callable(self, "_on_parameter_input_changed")):
 			viscosity_node.connect("value_changed", Callable(self, "_on_parameter_input_changed"))
