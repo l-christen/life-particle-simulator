@@ -89,8 +89,6 @@ func update_ui_for_state():
 func _on_start_stop_button_pressed():
 	if current_state == SimState.IDLE:
 		var params = collect_simulation_parameters()
-		# Debug print
-		print(params)
 
 		var total_particles = params.num_red + params.num_blue + params.num_green + params.num_yellow
 		if total_particles == 0:
@@ -123,7 +121,7 @@ func _on_start_stop_button_pressed():
 		current_state = SimState.IDLE
 		update_ui_for_state()
 
-# Logig for the play pause button
+# Logic for the play pause button
 func _on_toggle_pause_button_pressed():
 	if current_state == SimState.RUNNING:
 		particle_renderer.update_is_running()
@@ -158,7 +156,7 @@ func get_slider_rules() -> PackedFloat32Array:
 	var target_order = ["R", "B", "G", "Y"] 
 	
 	for source in color_data:
-		var source_key = source.key # R, B, G, ou Y
+		var source_key = source.key # R, B, G, Y
 		var source_vbox = source.vbox
 		
 		for target_key in target_order:
@@ -200,7 +198,7 @@ func get_radius_of_influence() -> PackedFloat32Array:
 			radius_array.append(radius_value)
 		else:
 			radius_array.append(0.0)
-			print("Erreur: Node not found for %s." % color_name)
+			print("Error: Node not found for %s." % color_name)
 			
 	return radius_array
 
