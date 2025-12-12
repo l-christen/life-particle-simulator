@@ -19,15 +19,12 @@ var current_state = SimState.IDLE
 var sim_width: int
 var sim_height: int
 
-# Panel width, absolute for now
-const UI_PANEL_WIDTH: int = 350
-
 
 # Called when the node enters the scene tree for the first time.
 func _ready() -> void:
 	# Initialize sim_height and sim_width
 	sim_width = DisplayServer.window_get_size().x
-	sim_height = DisplayServer.window_get_size().y - UI_PANEL_WIDTH
+	sim_height = DisplayServer.window_get_size().y
 	
 	setup_slider_ranges()
 	
@@ -37,6 +34,9 @@ func _ready() -> void:
 	
 	# Update UI components visibility
 	update_ui_for_state()
+
+	# Set position of the particle renderer
+	particle_renderer.global_position = Vector2(0, 0)
 
 
 # Called every frame. 'delta' is the elapsed time since the previous frame.
