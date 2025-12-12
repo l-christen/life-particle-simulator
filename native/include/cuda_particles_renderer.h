@@ -72,6 +72,7 @@ namespace godot {
             PackedFloat32Array simulationRadiusOfInfluence,
             int width,
             int height,
+            float viscosity,
             float deltaTime
         );
         void update_rules(PackedFloat32Array simulationRules);

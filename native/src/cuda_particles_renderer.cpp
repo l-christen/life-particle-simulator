@@ -17,7 +17,7 @@ using namespace godot;
 
 // Binding methods for GDExtension, only static methods can be bound
 void CudaParticlesRenderer::_bind_methods() {
-    ClassDB::bind_method(D_METHOD("start_simulation", "numRed", "numBlue", "numGreen", "numYellow", "simulationRules", "simulationRadiusOfInfluence", "width", "height", "deltaTime"), 
+    ClassDB::bind_method(D_METHOD("start_simulation", "numRed", "numBlue", "numGreen", "numYellow", "simulationRules", "simulationRadiusOfInfluence", "width", "height", "viscosity", "deltaTime"), 
         &CudaParticlesRenderer::start_simulation);
     
     ClassDB::bind_method(D_METHOD("update_rules", "simulationRules"), 
