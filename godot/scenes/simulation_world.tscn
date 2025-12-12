@@ -476,19 +476,30 @@ vertical_alignment = 1
 layout_mode = 2
 max_value = 300.0
 
-[node name="DtHbox" type="HBoxContainer" parent="CanvasLayer/Control/GlobalVBox"]
+[node name="DtViscosityHbox" type="HBoxContainer" parent="CanvasLayer/Control/GlobalVBox"]
 layout_mode = 2
 
-[node name="DtLabel" type="Label" parent="CanvasLayer/Control/GlobalVBox/DtHbox"]
+[node name="DtLabel" type="Label" parent="CanvasLayer/Control/GlobalVBox/DtViscosityHbox"]
 layout_mode = 2
 text = "Delta time"
 horizontal_alignment = 1
 vertical_alignment = 1
 
-[node name="DtInput" type="SpinBox" parent="CanvasLayer/Control/GlobalVBox/DtHbox"]
+[node name="DtInput" type="SpinBox" parent="CanvasLayer/Control/GlobalVBox/DtViscosityHbox"]
 layout_mode = 2
 max_value = 10.0
 step = 0.1
+
+[node name="ViscosityLabel" type="Label" parent="CanvasLayer/Control/GlobalVBox/DtViscosityHbox"]
+layout_mode = 2
+text = "Viscosity"
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="ViscosityInput" type="SpinBox" parent="CanvasLayer/Control/GlobalVBox/DtViscosityHbox"]
+layout_mode = 2
+max_value = 5.0
+step = 0.2
 
 [node name="SimControlsHBox" type="HBoxContainer" parent="CanvasLayer/Control/GlobalVBox"]
 layout_mode = 2

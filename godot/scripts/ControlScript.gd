@@ -46,13 +46,13 @@ func _process(_delta: float) -> void:
 # Function to control components visibility according to simulation state
 func update_ui_for_state():
 	var dt_input_node = dt_viscosity_input_panel.get_node("DtInput")
-	var viscosity_input_node = dt_viscosity_input_panel("ViscosityInput")
+	var viscosity_input_node = dt_viscosity_input_panel.get_node("ViscosityInput")
 
 	match current_state:
 		SimState.IDLE:
 			particle_count_panel.visible = true
 			rules_radius_panel.visible = true
-			dt_input_panel.visible = true
+			dt_viscosity_input_panel.visible = true
 			toggle_pause_button.visible = false
 			start_stop_button.visible = true
 			start_stop_button.text = "Start"
@@ -63,7 +63,7 @@ func update_ui_for_state():
 		SimState.RUNNING:
 			particle_count_panel.visible = false
 			rules_radius_panel.visible = false
-			dt_input_panel.visible = false
+			dt_viscosity_input_panel.visible = false
 			toggle_pause_button.visible = true
 			toggle_pause_button.text = "Pause"
 			start_stop_button.visible = true
@@ -76,7 +76,7 @@ func update_ui_for_state():
 		SimState.PAUSED:
 			particle_count_panel.visible = false
 			rules_radius_panel.visible = true
-			dt_input_panel.visible = true
+			dt_viscosity_input_panel.visible = true
 			toggle_pause_button.visible = true
 			toggle_pause_button.text = "Play"
 			start_stop_button.visible = true
@@ -210,7 +210,7 @@ func collect_simulation_parameters() -> Dictionary:
 	var num_yellow = get_numerical_input(str(particle_count_panel.get_path()) + "/YellowParticleCount/YellowCountInput")
 	
 	var dt_value = get_numerical_input(str(dt_viscosity_input_panel.get_path()) + "/DtInput")
-	var viscosity_value = get_numerical_input(str(dt_viscosity_input_panel.get_path().get_path()) + "/ViscosityInput")
+	var viscosity_value = get_numerical_input(str(dt_viscosity_input_panel.get_path()) + "/ViscosityInput")
 
 	var rules_array = get_slider_rules()
 	var radius_array = get_radius_of_influence()
@@ -231,8 +231,8 @@ func _on_parameter_input_changed(_new_value):
 	if current_state == SimState.PAUSED:
 		var rules_array = get_slider_rules()
 		var radius_array = get_radius_of_influence()
-		var dt_value = get_numerical_input(str(dt_viscosity_input_panel.get_path().get_path()) + "/DtInput")
-		var viscosity_value = get_numerical_input(str(dt_viscosity_input_panel.get_path().get_path()) + "/ViscosityInput")
+		var dt_value = get_numerical_input(str(dt_viscosity_input_panel.get_path()) + "/DtInput")
+		var viscosity_value = get_numerical_input(str(dt_viscosity_input_panel.get_path()) + "/ViscosityInput")
 		
 		particle_renderer.update_rules(rules_array)
 		particle_renderer.update_radius_of_influence(radius_array)
