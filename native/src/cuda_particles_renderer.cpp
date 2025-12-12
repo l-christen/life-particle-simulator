@@ -17,7 +17,7 @@ using namespace godot;
 
 // Binding methods for GDExtension, only static methods can be bound
 void CudaParticlesRenderer::_bind_methods() {
-    ClassDB::bind_method(D_METHOD("start_simulation", "numRed", "numBlue", "numGreen", "numYellow", "simulationRules", "simulationRadiusOfInfluence", "width", "height", "viscosity", "deltaTime"), 
+    ClassDB::bind_method(D_METHOD("start_simulation", "numRed", "numBlue", "numGreen", "numYellow", "simulationRules", "simulationRadiusOfInfluence", "width", "height"), 
         &CudaParticlesRenderer::start_simulation);
     
     ClassDB::bind_method(D_METHOD("update_rules", "simulationRules"), 
@@ -135,9 +135,7 @@ void CudaParticlesRenderer::start_simulation(
     PackedFloat32Array simulationRules,
     PackedFloat32Array simulationRadiusOfInfluence,
     int width,
-    int height,
-    float viscosity,
-    float deltaTime
+    int height
 ) {
     UtilityFunctions::print("Starting simulation");
     // Set the number of particles
@@ -146,8 +144,6 @@ void CudaParticlesRenderer::start_simulation(
     // Set sim_width, sim_height, delta_time
     sim_width = static_cast<float>(width);
     sim_height = static_cast<float>(height);
-    delta_time = deltaTime;
-    this->viscosity = viscosity;
 
     // Update rules and radius of influence
     update_rules(simulationRules);

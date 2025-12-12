@@ -96,6 +96,9 @@ func _on_start_stop_button_pressed():
 		if total_particles == 0:
 			print("Error: The number of particles has to be greater than 0.")
 			return
+
+		particle_renderer.update_delta_time(params.dt)
+		particle_renderer.update_viscosity(params.viscosity)
 		
 		# Call the binded method from GDExtension
 		particle_renderer.start_simulation(
@@ -106,8 +109,7 @@ func _on_start_stop_button_pressed():
 			params.rules,
 			params.radius,
 			sim_width,
-			sim_height,
-			params.dt
+			sim_height
 			)
 		print("Sim started")
 		
