@@ -7,7 +7,6 @@
 #include <godot_cpp/classes/quad_mesh.hpp>
 #include <godot_cpp/classes/node2d.hpp>
 #include <godot_cpp/variant/packed_float32_array.hpp>
-#include <godot_cpp/core/property_info.hpp>
 
 #include "simulation.cuh"
 #include "compute_buffers.h"
@@ -57,20 +56,20 @@ void CudaParticlesRenderer::_ready() {
     compute = new ComputeBuffers(1000000);
 
     // Initialize multimesh for rendering
-    multimesh = memnew(MultiMesh);
-    multimesh->set_use_colors(true);
-    multimesh->set_transform_format(MultiMesh::TRANSFORM_2D);
+    multimesh = memnew(MultiMesh); // create a pointer to a new MultiMesh
+    multimesh->set_use_colors(true); // enable colors
+    multimesh->set_transform_format(MultiMesh::TRANSFORM_2D); // set transform format to 2D
 
     // Create mesh
-    godot::Ref<godot::QuadMesh> mesh;
-    mesh.instantiate();
-    mesh->set_size(godot::Vector2(2.0f, 2.0f));
-    multimesh->set_mesh(mesh);
+    Ref<QuadMesh> mesh; // create a smart pointer to QuadMesh
+    mesh.instantiate(); // instantiate the quad mesh
+    mesh->set_size(Vector2(2.0f, 2.0f)); // set size of each particle quad
+    multimesh->set_mesh(mesh); // assign mesh to multimesh
 
     // Create node to display the MultiMesh
-    MultiMeshInstance2D* instance = memnew(MultiMeshInstance2D);
-    instance->set_multimesh(multimesh);
-    add_child(instance);
+    MultiMeshInstance2D* instance = memnew(MultiMeshInstance2D); // create a pointer to a new MultiMeshInstance2D
+    instance->set_multimesh(multimesh); // assign the multimesh to the instance
+    add_child(instance); // add the instance as a child node from our CudaParticlesRenderer node
 }
 
 // Called every frame
@@ -97,7 +96,7 @@ void CudaParticlesRenderer::update_multimesh(ParticlesAoS& render_buffer)
     Particle* particles = render_buffer.h_particles;
 
     // Update instance transforms and colors based on particle data
-    // Can be optimized later by pushing tranforms/colors in one call
+    // Can be optimized by pushing transforms/colors in one call
     for (int i = 0; i < count; i++) {
         Vector2 pos = Vector2(particles[i].x, particles[i].y);
         Transform2D transform;
@@ -125,6 +124,9 @@ void CudaParticlesRenderer::update_multimesh(ParticlesAoS& render_buffer)
         multimesh->set_instance_color(i, col);
     }
 }
+/**********************************************************************************
+The following methods are exposed to Godot to control the simulation through the UI.
+***********************************************************************************/
 
 // Start the simulation with given parameters
 void CudaParticlesRenderer::start_simulation(
@@ -171,7 +173,7 @@ void CudaParticlesRenderer::start_simulation(
 
 // Update simulation rules
 void CudaParticlesRenderer::update_rules(PackedFloat32Array simulationRules) {
-    // Get raw pointer to the rules data, allowed since PackedFloat32Array stores data contiguously
+    // Get raw pointer to the rules data, allowed because PackedFloat32Array stores data contiguously
     const float* raw_rules_ptr = simulationRules.ptr();
 
     // Update rules in device constant memory

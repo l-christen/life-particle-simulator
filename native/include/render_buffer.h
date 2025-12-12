@@ -5,12 +5,16 @@
 #include <cuda_runtime.h>
 #include <cstdint>
 
+/*
+For now this class is not used because mapped memory might not allow to compile the extension.
+*/
+
 class RenderBuffer {
     public:
         // Constructor that allocates pinned host memory for particles
         RenderBuffer(uint32_t max_particles) {
 
-            // Allocate pinned host memory for particles with write-combined (allows gpu write by chunk) and mapped flags
+            // Allocate pinned host memory for particles and mapped flags
             cudaHostAlloc(&h_particles, sizeof(Particle) * max_particles, cudaHostAllocMapped);
 
             // Get device pointers for the mapped host memory

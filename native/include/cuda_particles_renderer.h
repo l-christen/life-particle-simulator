@@ -27,21 +27,17 @@ namespace godot {
         float viscosity = 0.0f;
 
         // Width and height of the simulation area
-        float sim_width = 1024.0f;
-        float sim_height = 768.0f;
+        float sim_width = 1280.0f;
+        float sim_height = 720.0f;
 
         // State flags
         bool is_initialized = false;
         bool is_running = false;
+        bool simulation_running = false;
 
         // Multimesh instance for rendering particles
         MultiMesh* multimesh;
-        RID multimesh_rid;
-        std::vector<float> transform_buffer;
-
-        // Simulation control
-        bool simulation_running = false;
-    
+        
     protected:
         static void _bind_methods();
     
@@ -62,7 +58,7 @@ namespace godot {
         // Update the multimesh instance with the latest particle data
         void update_multimesh(ParticlesAoS& render_buffer);
 
-        // Simulation control methods
+        // Simulation methods exposed to Godot
         void start_simulation(
             int numRed,
             int numBlue,

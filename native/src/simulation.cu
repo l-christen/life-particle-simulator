@@ -16,6 +16,8 @@
 // Store particles rules in constant memory for faster access in kernels
 // It is redundant and read only, so constant memory is a good fit
 #define NUM_PARTICLE_TYPES 4 // static value for now
+
+// Interaction rules between particle types (matrix flattened)
 __constant__ float particleRules[NUM_PARTICLE_TYPES * NUM_PARTICLE_TYPES];
 // Store radius of influence for each particle type
 __constant__ float radiusOfInfluence[NUM_PARTICLE_TYPES];
@@ -26,7 +28,8 @@ struct Vec2 {
     float y;
 };
 
-// This function has to be redone properly, this is for testing purposes only
+// This function initializes the simulation with random particle positions and zero velocities
+// It can be improved by generating the randomness on the GPU directly
 extern "C" void initSimulation(
     ParticlesSoA* prev,
     ParticlesSoA* next,
@@ -105,6 +108,7 @@ extern "C" void initSimulation(
     delete[] h_type;
     delete[] h_particles;
     
+    // Set number of particles
     prev->numParticles = numParticles;
     next->numParticles = numParticles;
     render->numParticles = numParticles;
@@ -122,7 +126,7 @@ __device__ float distance_squared(float x1, float y1, float x2, float y2) {
 __device__ Vec2 normalized_vector_between_particles(float x1, float y1, float x2, float y2) {
     float dx = x2 - x1;
     float dy = y2 - y1;
-    float inv_length = rsqrtf(dx * dx + dy * dy);
+    float inv_length = rsqrtf(dx * dx + dy * dy); // reciprocal of the length, using rsqrtf for performance
     return { dx * inv_length, dy * inv_length };
 }
 
@@ -136,6 +140,7 @@ __global__ void updateParticlePositions(
     float height,
     float viscosity,
     float deltaTime) {
+    // Calculate global thread index
     int idx = blockIdx.x * blockDim.x + threadIdx.x;
     if (idx < numParticles) {
         float ax = 0.0f; // accumulated acceleration for x
@@ -192,7 +197,7 @@ extern "C" void runSimulationStep(
     int threadsPerBlock = 256;
     int blocksPerGrid = (numParticles + threadsPerBlock - 1) / threadsPerBlock;
 
-    // Launch the kernel in the created stream
+    // Launch the kernel
     updateParticlePositions<<<blocksPerGrid, threadsPerBlock>>>(
         *prev,
         *next,
@@ -204,16 +209,19 @@ extern "C" void runSimulationStep(
         deltaTime
     );
 
-
+    // Synchronize to ensure kernel completion
     cudaDeviceSynchronize();
 
+    // Copy render buffer back to host
     cudaMemcpy(render->h_particles, render->d_particles, sizeof(Particle) * numParticles, cudaMemcpyDeviceToHost);
 }
 
+// Function to set simulation rules from host
 extern "C" void setSimulationRules(const float* rules) {
     cudaMemcpyToSymbol(particleRules, rules, sizeof(float) * NUM_PARTICLE_TYPES * NUM_PARTICLE_TYPES);
 }
 
+// Function to set radius of influence from host
 extern "C" void setSimulationRadiusOfInfluence(const float* radius) {
     cudaMemcpyToSymbol(radiusOfInfluence, radius, sizeof(float) * NUM_PARTICLE_TYPES);
 }

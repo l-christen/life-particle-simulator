@@ -21,7 +21,7 @@ ComputeBuffers::ComputeBuffers(uint32_t max_particles) {
     cudaMalloc(&next.d_vx, sizeof(float) * capacity);
     cudaMalloc(&next.d_vy, sizeof(float) * capacity);
 
-    // Allocate render buffer
+    // Allocate device memory for render buffer
     cudaMalloc(&renderBuffer.d_particles, sizeof(Particle) * capacity);
 
     // Allocate host memory for render buffer
@@ -33,7 +33,7 @@ ComputeBuffers::ComputeBuffers(uint32_t max_particles) {
     next.capacity = capacity;
     renderBuffer.capacity = capacity;
 
-    // Initialize number of particles to zero, will be set during initialization
+    // Initialize number of particles to zero, will be set during simulation initialization
     prev.numParticles = 0;
     next.numParticles = 0;
     renderBuffer.numParticles = 0;

@@ -9,7 +9,7 @@
 
 class ComputeBuffers {
 public:
-    // Buffer sets for previous and next simulation steps, we need two sets to avoid read-write conflicts
+    // Buffers (SoA) for previous and next simulation steps, we need two buffers to avoid read-write conflicts
     ParticlesSoA prev;
     ParticlesSoA next;
     ParticlesAoS renderBuffer; // buffer for rendering (AoS format)
