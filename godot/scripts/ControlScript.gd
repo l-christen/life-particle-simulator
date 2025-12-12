@@ -10,7 +10,7 @@ extends Control
 
 @onready var start_stop_button = $GlobalVBox/SimControlsHBox/StartStopButton
 @onready var toggle_pause_button = $GlobalVBox/SimControlsHBox/TogglePauseButton
-@onready var dt_input_panel = $GlobalVBox/DtHbox
+@onready var dt_viscosity_input_panel = $GlobalVBox/DtViscosityHBox
 
 # 3 possibles simulation states
 enum SimState { IDLE, RUNNING, PAUSED }
@@ -45,7 +45,8 @@ func _process(_delta: float) -> void:
 
 # Function to control components visibility according to simulation state
 func update_ui_for_state():
-	var dt_input_node = dt_input_panel.get_node("DtInput")
+	var dt_input_node = dt_viscosity_input_panel.get_node("DtInput")
+	var viscosity_input_node = dt_viscosity_input_panel("ViscosityInput")
 
 	match current_state:
 		SimState.IDLE:
@@ -57,6 +58,7 @@ func update_ui_for_state():
 			start_stop_button.text = "Start"
 			
 			dt_input_node.editable = true
+			viscosity_input_node.editable = true
 			
 		SimState.RUNNING:
 			particle_count_panel.visible = false
@@ -68,6 +70,7 @@ func update_ui_for_state():
 			start_stop_button.text = "Stop"
 			
 			dt_input_node.editable = false
+			viscosity_input_node.editable = false
 
 			
 		SimState.PAUSED:
@@ -80,6 +83,7 @@ func update_ui_for_state():
 			start_stop_button.text = "Stop"
 			
 			dt_input_node.editable = true
+			viscosity_input_node.editable = true
 			
 # Logic for the start stop button
 func _on_start_stop_button_pressed():
@@ -205,7 +209,8 @@ func collect_simulation_parameters() -> Dictionary:
 	var num_green = get_numerical_input(str(particle_count_panel.get_path()) + "/GreenParticleCount/GreenCountInput")
 	var num_yellow = get_numerical_input(str(particle_count_panel.get_path()) + "/YellowParticleCount/YellowCountInput")
 	
-	var dt_value = get_numerical_input(str(dt_input_panel.get_path()) + "/DtInput")
+	var dt_value = get_numerical_input(str(dt_viscosity_input_panel.get_path()) + "/DtInput")
+	var viscosity_value = get_numerical_input(str(dt_viscosity_input_panel.get_path().get_path()) + "/ViscosityInput")
 
 	var rules_array = get_slider_rules()
 	var radius_array = get_radius_of_influence()
@@ -217,6 +222,7 @@ func collect_simulation_parameters() -> Dictionary:
 		"num_yellow": int(num_yellow),
 		"rules": rules_array,
 		"radius": radius_array,
+		"viscosity": viscosity_value,
 		"dt": dt_value
 	}
 
@@ -225,11 +231,13 @@ func _on_parameter_input_changed(_new_value):
 	if current_state == SimState.PAUSED:
 		var rules_array = get_slider_rules()
 		var radius_array = get_radius_of_influence()
-		var dt_value = get_numerical_input(str(dt_input_panel.get_path()) + "/DtInput")
+		var dt_value = get_numerical_input(str(dt_viscosity_input_panel.get_path().get_path()) + "/DtInput")
+		var viscosity_value = get_numerical_input(str(dt_viscosity_input_panel.get_path().get_path()) + "/ViscosityInput")
 		
 		particle_renderer.update_rules(rules_array)
 		particle_renderer.update_radius_of_influence(radius_array)
 		particle_renderer.update_delta_time(dt_value)
+		particle_renderer.update_viscosity(viscosity_value)
 		
 
 # Method called when a slider value change to modify the value in the slider label
@@ -310,10 +318,15 @@ func _connect_spinboxes():
 			if not node.is_connected("value_changed", Callable(self, "_on_count_input_changed")):
 				node.connect("value_changed", Callable(self, "_on_count_input_changed"))
 
-	var dt_node = dt_input_panel.get_node_or_null("DtInput")
+	var dt_node = dt_viscosity_input_panel.get_node_or_null("DtInput")
 	if dt_node and dt_node is SpinBox:
 		if not dt_node.is_connected("value_changed", Callable(self, "_on_parameter_input_changed")):
 			dt_node.connect("value_changed", Callable(self, "_on_parameter_input_changed"))
+
+	var viscosity_node = dt_viscosity_input_panel.get_node_or_null("DtViscosity")
+	if viscosity_node and viscosity_node is SpinBox:
+		if not viscosity_node.is_connected("value_changed", Callable(self, "_on_parameter_input_changed")):
+			viscosity_node.connect("value_changed", Callable(self, "_on_parameter_input_changed"))
 			
 func _on_count_input_changed(_new_value: float):
 	pass

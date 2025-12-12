@@ -31,8 +31,12 @@ void CudaParticlesRenderer::_bind_methods() {
     
     ClassDB::bind_method(D_METHOD("stop_simulation"), 
         &CudaParticlesRenderer::stop_simulation);
+
     ClassDB::bind_method(D_METHOD("update_delta_time", "p_delta_time"), 
         &CudaParticlesRenderer::update_delta_time);
+
+    ClassDB::bind_method(D_METHOD("update_viscosity", "p_viscosity"), 
+        &CudaParticlesRenderer::update_viscosity);
 }
 
 CudaParticlesRenderer::CudaParticlesRenderer() {
@@ -76,7 +80,7 @@ void CudaParticlesRenderer::_process(double delta) {
     }
     if (is_initialized && is_running) {
         // Run simulation step
-        runSimulationStep(&compute->prev, &compute->next, &compute->renderBuffer, num_particles, sim_width, sim_height, delta_time);
+        runSimulationStep(&compute->prev, &compute->next, &compute->renderBuffer, num_particles, sim_width, sim_height, viscosity, delta_time);
     
         // Swap buffers for next iteration
         compute->swap();
@@ -132,6 +136,7 @@ void CudaParticlesRenderer::start_simulation(
     PackedFloat32Array simulationRadiusOfInfluence,
     int width,
     int height,
+    float viscosity,
     float deltaTime
 ) {
     UtilityFunctions::print("Starting simulation");
@@ -142,6 +147,7 @@ void CudaParticlesRenderer::start_simulation(
     sim_width = static_cast<float>(width);
     sim_height = static_cast<float>(height);
     delta_time = deltaTime;
+    this->viscosity = viscosity;
 
     // Update rules and radius of influence
     update_rules(simulationRules);

@@ -28,6 +28,7 @@ void runSimulationStep(
     int numParticles,
     float width,
     float height,
+    float viscosity,
     float deltaTime
 );
 

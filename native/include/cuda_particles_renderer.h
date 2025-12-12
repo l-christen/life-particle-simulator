@@ -23,6 +23,9 @@ namespace godot {
         // Delta time for simulation steps
         float delta_time = 0.01f;
 
+        // Viscosity parameter for simulation
+        float viscosity = 0.0f;
+
         // Width and height of the simulation area
         float sim_width = 1024.0f;
         float sim_height = 768.0f;
@@ -48,6 +51,9 @@ namespace godot {
 
         // Setter for delta_time
         void update_delta_time(float p_delta_time) { delta_time = p_delta_time; }
+
+        // Setter for viscosity
+        void update_viscosity(float p_viscosity) { viscosity = p_viscosity; }
 
         // Standard Godot methods
         void _ready() override;

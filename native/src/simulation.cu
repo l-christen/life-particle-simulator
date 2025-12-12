@@ -159,7 +159,7 @@ __global__ void updateParticlePositions(
         // Apply viscosity
         next.d_vx[idx] *= viscosity;
         next.d_vy[idx] *= viscosity;
-        
+
         // Update position with boundary checks (toroidal space)
         float temp_x = prev.d_x[idx] + next.d_vx[idx] * deltaTime;
         float temp_y = prev.d_y[idx] + next.d_vy[idx] * deltaTime;
@@ -185,6 +185,7 @@ extern "C" void runSimulationStep(
     int numParticles,
     float width,
     float height,
+    float viscosity,
     float deltaTime
 ) {
     // "Random" block and grid size for now, need to be optimized later
@@ -199,6 +200,7 @@ extern "C" void runSimulationStep(
         numParticles,
         width,
         height,
+        viscosity,
         deltaTime
     );
 
