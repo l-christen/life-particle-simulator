@@ -134,6 +134,7 @@ __global__ void updateParticlePositions(
     int numParticles,
     float width,
     float height,
+    float viscosity,
     float deltaTime) {
     int idx = blockIdx.x * blockDim.x + threadIdx.x;
     if (idx < numParticles) {
@@ -142,7 +143,7 @@ __global__ void updateParticlePositions(
         for (int j = 0; j < numParticles; j++) { // loop over all particles to compute interactions
             if (idx != j) {
                 float dist_sq = distance_squared(prev.d_x[idx], prev.d_y[idx], prev.d_x[j], prev.d_y[j]);
-                if (dist_sq < (radiusOfInfluence[prev.d_type[j]] * radiusOfInfluence[prev.d_type[j]])) {
+                if (dist_sq < (radiusOfInfluence[prev.d_type[idx]] * radiusOfInfluence[prev.d_type[idx]])) {
                     Vec2 dir = normalized_vector_between_particles(prev.d_x[idx], prev.d_y[idx], prev.d_x[j], prev.d_y[j]);
                     // Apply force based on particle types and distance with an adaptation of Newton's law of universal gravitation
                     float force = particleRules[prev.d_type[idx] * NUM_PARTICLE_TYPES + prev.d_type[j]] / (dist_sq + 0.0001f); // avoid division by zero
@@ -154,9 +155,18 @@ __global__ void updateParticlePositions(
         // Update velocity (v = v0 + a * t)
         next.d_vx[idx] = prev.d_vx[idx] + ax * deltaTime;
         next.d_vy[idx] = prev.d_vy[idx] + ay * deltaTime;
+
+        // Apply viscosity
+        next.d_vx[idx] *= viscosity;
+        next.d_vy[idx] *= viscosity;
+        
         // Update position with boundary checks (toroidal space)
-        next.d_x[idx] = fmodf(prev.d_x[idx] + next.d_vx[idx] * deltaTime + width, width);
-        next.d_y[idx] = fmodf(prev.d_y[idx] + next.d_vy[idx] * deltaTime + height, height);
+        float temp_x = prev.d_x[idx] + next.d_vx[idx] * deltaTime;
+        float temp_y = prev.d_y[idx] + next.d_vy[idx] * deltaTime;
+        while (temp_x < 0) temp_x += width;
+        while (temp_y < 0) temp_y += height;
+        next.d_x[idx] = fmodf(temp_x, width);
+        next.d_y[idx] = fmodf(temp_y, height);
         // Update render buffer
         render_buffer.d_particles[idx] = {
             next.d_x[idx],
