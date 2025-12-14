@@ -12,7 +12,7 @@ LPS is a particle simulator that allows users to simulate particles behavior wit
 
 To learn more, read the user guide in the [docs](./docs/USER_GUIDE.md) folder.
 
-## Hardwarwe Requirements
+## Hardware Requirements
 - A computer with a CUDA-capable GPU (NVIDIA).
 - With the actual build settings, a computer with a Linux OS is required. (Windows and MacOS might work with some adjustments in the SConstruct file).
 
@@ -64,5 +64,5 @@ Note : You might need to adjust your C++ compiler version to match the NVCC supp
 3. Extract the downloaded file. The executable need to be in the same folder as the .pck file.
 4. Run the executable.
 
-## Lisence
+## License
 This project is licensed under the MIT License, see the [LICENSE](./LICENSE) file for details.
