@@ -4,6 +4,7 @@
 
 #include <cuda_runtime.h>
 #include <cstdint>
+#include <utility>
 
 /*
 For now this class is not used because mapped memory might not allow to compile the extension.
