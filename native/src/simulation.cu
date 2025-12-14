@@ -31,8 +31,8 @@ struct Vec2 {
 // This function initializes the simulation with random particle positions and zero velocities
 // It can be improved by generating the randomness on the GPU directly
 extern "C" void initSimulation(
-    ParticlesSoA* prev,
-    ParticlesSoA* next,
+    ParticlesSoA prev,
+    ParticlesSoA next,
     ParticlesAoS* render,
     uint32_t numRed,
     uint32_t numBlue,
@@ -86,16 +86,17 @@ extern "C" void initSimulation(
     }
 
     // Copy to device
-    cudaMemcpy(prev->d_x, h_x, sizeof(float) * numParticles, cudaMemcpyHostToDevice);
-    cudaMemcpy(prev->d_y, h_y, sizeof(float) * numParticles, cudaMemcpyHostToDevice);
-    cudaMemcpy(prev->d_vx, h_vx, sizeof(float) * numParticles, cudaMemcpyHostToDevice);
-    cudaMemcpy(prev->d_vy, h_vy, sizeof(float) * numParticles, cudaMemcpyHostToDevice);
-    cudaMemcpy(prev->d_type, h_type, sizeof(uint32_t) * numParticles, cudaMemcpyHostToDevice);
+    cudaMemcpy(prev.d_x, h_x, sizeof(float) * numParticles, cudaMemcpyHostToDevice);
+    cudaMemcpy(prev.d_y, h_y, sizeof(float) * numParticles, cudaMemcpyHostToDevice);
+    cudaMemcpy(prev.d_vx, h_vx, sizeof(float) * numParticles, cudaMemcpyHostToDevice);
+    cudaMemcpy(prev.d_vy, h_vy, sizeof(float) * numParticles, cudaMemcpyHostToDevice);
+    cudaMemcpy(prev.d_type, h_type, sizeof(uint32_t) * numParticles, cudaMemcpyHostToDevice);
     
-    cudaMemcpy(next->d_x, h_x, sizeof(float) * numParticles, cudaMemcpyHostToDevice);
-    cudaMemcpy(next->d_y, h_y, sizeof(float) * numParticles, cudaMemcpyHostToDevice);
-    cudaMemcpy(next->d_vx, h_vx, sizeof(float) * numParticles, cudaMemcpyHostToDevice);
-    cudaMemcpy(next->d_vy, h_vy, sizeof(float) * numParticles, cudaMemcpyHostToDevice);
+    cudaMemcpy(next.d_x, h_x, sizeof(float) * numParticles, cudaMemcpyHostToDevice);
+    cudaMemcpy(next.d_y, h_y, sizeof(float) * numParticles, cudaMemcpyHostToDevice);
+    cudaMemcpy(next.d_vx, h_vx, sizeof(float) * numParticles, cudaMemcpyHostToDevice);
+    cudaMemcpy(next.d_vy, h_vy, sizeof(float) * numParticles, cudaMemcpyHostToDevice);
+    cudaMemcpy(next.d_type, h_type, sizeof(uint32_t) * numParticles, cudaMemcpyHostToDevice);
     
     cudaMemcpy(render->d_particles, h_particles, sizeof(Particle) * numParticles, cudaMemcpyHostToDevice);
 
@@ -109,8 +110,8 @@ extern "C" void initSimulation(
     delete[] h_particles;
     
     // Set number of particles
-    prev->numParticles = numParticles;
-    next->numParticles = numParticles;
+    prev.numParticles = numParticles;
+    next.numParticles = numParticles;
     render->numParticles = numParticles;
 }
 
@@ -132,15 +133,8 @@ __device__ Vec2 normalized_vector_between_particles(float x1, float y1, float x2
 
 // Kernel to update particle positions based on their types
 __global__ void updateParticlePositions(
-    float* prev_d_x,
-    float* prev_d_y,
-    float* prev_d_vx,
-    float* prev_d_vy,
-    uint32_t* prev_d_type,
-    float* next_d_x,
-    float* next_d_y,
-    float* next_d_vx,
-    float* next_d_vy,
+    ParticlesSoA prev,
+    ParticlesSoA next,
     Particle* render_d_particles,
     int numParticles,
     float width,
@@ -154,36 +148,36 @@ __global__ void updateParticlePositions(
         float ay = 0.0f; // accumulated acceleration for y
         for (int j = 0; j < numParticles; j++) { // loop over all particles to compute interactions
             if (idx != j) {
-                float dist_sq = distance_squared(prev_d_x[idx], prev_d_y[idx], prev_d_x[j], prev_d_y[j]);
-                if (dist_sq < (radiusOfInfluence[prev_d_type[idx]] * radiusOfInfluence[prev_d_type[idx]])) {
-                    Vec2 dir = normalized_vector_between_particles(prev_d_x[idx], prev_d_y[idx], prev_d_x[j], prev_d_y[j]);
+                float dist_sq = distance_squared(prev.d_x[idx], prev.d_y[idx], prev.d_x[j], prev.d_y[j]);
+                if (dist_sq < (radiusOfInfluence[prev.d_type[idx]] * radiusOfInfluence[prev.d_type[idx]])) {
+                    Vec2 dir = normalized_vector_between_particles(prev.d_x[idx], prev.d_y[idx], prev.d_x[j], prev.d_y[j]);
                     // Apply force based on particle types and distance with an adaptation of Newton's law of universal gravitation
-                    float force = particleRules[prev_d_type[idx] * NUM_PARTICLE_TYPES + prev_d_type[j]] / (dist_sq + 0.0001f); // avoid division by zero
+                    float force = particleRules[prev.d_type[idx] * NUM_PARTICLE_TYPES + prev.d_type[j]] / (dist_sq + 0.0001f); // avoid division by zero
                     ax += force * dir.x; // decompose force into x and accumulate
                     ay += force * dir.y; // decompose force into y and accumulate
                 }
             }
         }
         // Update velocity (v = v0 + a * t)
-        next_d_vx[idx] = prev_d_vx[idx] + ax * deltaTime;
-        next_d_vy[idx] = prev_d_vy[idx] + ay * deltaTime;
+        next.d_vx[idx] = prev.d_vx[idx] + ax * deltaTime;
+        next.d_vy[idx] = prev.d_vy[idx] + ay * deltaTime;
 
         // Apply viscosity
-        next_d_vx[idx] *= viscosity;
-        next_d_vy[idx] *= viscosity;
+        next.d_vx[idx] *= viscosity;
+        next.d_vy[idx] *= viscosity;
 
         // Update position with boundary checks (toroidal space)
-        float temp_x = prev_d_x[idx] + next_d_vx[idx] * deltaTime;
-        float temp_y = prev_d_y[idx] + next_d_vy[idx] * deltaTime;
+        float temp_x = prev.d_x[idx] + next.d_vx[idx] * deltaTime;
+        float temp_y = prev.d_y[idx] + next.d_vy[idx] * deltaTime;
         while (temp_x < 0) temp_x += width;
         while (temp_y < 0) temp_y += height;
-        next_d_x[idx] = fmodf(temp_x, width);
-        next_d_y[idx] = fmodf(temp_y, height);
+        next.d_x[idx] = fmodf(temp_x, width);
+        next.d_y[idx] = fmodf(temp_y, height);
         // Update render buffer
         render_d_particles[idx] = {
-            next_d_x[idx],
-            next_d_y[idx],
-            prev_d_type[idx],
+            next.d_x[idx],
+            next.d_y[idx],
+            prev.d_type[idx],
             0 // padding
         };
     }
@@ -191,8 +185,8 @@ __global__ void updateParticlePositions(
 
 // Wrapper function to lauch the kernel from Godot Extension
 extern "C" void runSimulationStep(
-    ParticlesSoA* prev,
-    ParticlesSoA* next,
+    ParticlesSoA prev,
+    ParticlesSoA next,
     ParticlesAoS* render,
     int numParticles,
     float width,
@@ -206,15 +200,8 @@ extern "C" void runSimulationStep(
 
     // Launch the kernel
     updateParticlePositions<<<blocksPerGrid, threadsPerBlock>>>(
-        prev->d_x,
-        prev->d_y,
-        prev->d_vx,
-        prev->d_vy,
-        prev->d_type,
-        next->d_x,
-        next->d_y,
-        next->d_vx,
-        next->d_vy,
+        prev,
+        next,
         render->d_particles,
         numParticles,
         width,

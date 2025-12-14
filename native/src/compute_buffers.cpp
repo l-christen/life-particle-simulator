@@ -8,30 +8,42 @@
 ComputeBuffers::ComputeBuffers(uint32_t max_particles) {
     capacity = max_particles;
 
-    // Allocate prev buffers
-    cudaMalloc(&prev.d_x, sizeof(float) * capacity);
-    cudaMalloc(&prev.d_y, sizeof(float) * capacity);
-    cudaMalloc(&prev.d_vx, sizeof(float) * capacity);
-    cudaMalloc(&prev.d_vy, sizeof(float) * capacity);
-    cudaMalloc(&prev.d_type, sizeof(uint32_t) * capacity);
-
-    // Allocate next buffers
-    cudaMalloc(&next.d_x, sizeof(float) * capacity);
-    cudaMalloc(&next.d_y, sizeof(float) * capacity);
-    cudaMalloc(&next.d_vx, sizeof(float) * capacity);
-    cudaMalloc(&next.d_vy, sizeof(float) * capacity);
+    // Compute SoA buffer sizes
+    size_t bufferSoASize = 0;
+    bufferSoASize += sizeof(float) * capacity * 4; // x, y, vx, vy
+    bufferSoASize += sizeof(uint32_t) * capacity;  // type
+    // Allocate prev buffer
+    cudaMalloc(&d_prev, bufferSoASize);
+    // Allocate next buffer
+    cudaMalloc(&d_next, bufferSoASize);
+    // Define pointers positions in prev buffer
+    size_t offset = 0;
+    prev.d_x = (float*)((char*)d_prev + offset);
+    offset += sizeof(float) * capacity;
+    prev.d_y = (float*)((char*)d_prev + offset);
+    offset += sizeof(float) * capacity;
+    prev.d_vx = (float*)((char*)d_prev + offset);
+    offset += sizeof(float) * capacity;
+    prev.d_vy = (float*)((char*)d_prev + offset);
+    offset += sizeof(uint32_t) * capacity;
+    prev.d_type = (uint32_t*)((char*)d_prev + offset);
+    // Define pointers positions in next buffer
+    offset = 0;
+    next.d_x = (float*)((char*)d_next + offset);
+    offset += sizeof(float) * capacity;
+    next.d_y = (float*)((char*)d_next + offset);
+    offset += sizeof(float) * capacity;
+    next.d_vx = (float*)((char*)d_next + offset);
+    offset += sizeof(float) * capacity;
+    next.d_vy = (float*)((char*)d_next + offset);
+    offset += sizeof(uint32_t) * capacity;
+    next.d_type = (uint32_t*)((char*)d_next + offset);
 
     // Allocate device memory for render buffer
     cudaMalloc(&renderBuffer.d_particles, sizeof(Particle) * capacity);
 
     // Allocate host memory for render buffer
     renderBuffer.h_particles = new Particle[capacity];
-
-    next.d_type = prev.d_type; // shared between prev and next
-
-    prev.capacity = capacity;
-    next.capacity = capacity;
-    renderBuffer.capacity = capacity;
 
     // Initialize number of particles to zero, will be set during simulation initialization
     prev.numParticles = 0;
@@ -41,17 +53,9 @@ ComputeBuffers::ComputeBuffers(uint32_t max_particles) {
 
 // Destructor that frees device memory
 ComputeBuffers::~ComputeBuffers() {
-    cudaFree(prev.d_x);
-    cudaFree(prev.d_y);
-    cudaFree(prev.d_vx);
-    cudaFree(prev.d_vy);
+    cudaFree(d_prev);
 
-    cudaFree(prev.d_type); // shared between prev and next
-
-    cudaFree(next.d_x);
-    cudaFree(next.d_y);
-    cudaFree(next.d_vx);
-    cudaFree(next.d_vy);
+    cudaFree(d_next);
 
     cudaFree(renderBuffer.d_particles);
 

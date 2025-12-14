@@ -79,7 +79,7 @@ void CudaParticlesRenderer::_process(double delta) {
     }
     if (is_initialized && is_running) {
         // Run simulation step
-        runSimulationStep(&compute->prev, &compute->next, &compute->renderBuffer, num_particles, sim_width, sim_height, viscosity, delta_time);
+        runSimulationStep(compute->prev, compute->next, &compute->renderBuffer, num_particles, sim_width, sim_height, viscosity, delta_time);
     
         // Swap buffers for next iteration
         compute->swap();
@@ -152,8 +152,8 @@ void CudaParticlesRenderer::start_simulation(
     update_radius_of_influence(simulationRadiusOfInfluence);
 
     initSimulation(
-        &compute->prev,
-        &compute->next,
+        compute->prev,
+        compute->next,
         &compute->renderBuffer,
         numRed,
         numBlue,

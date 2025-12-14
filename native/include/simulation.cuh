@@ -10,8 +10,8 @@ extern "C" {
 #endif
 
 void initSimulation(
-    ParticlesSoA* prev,
-    ParticlesSoA* next,
+    ParticlesSoA prev,
+    ParticlesSoA next,
     ParticlesAoS* render,
     uint32_t numRed,
     uint32_t numBlue,
@@ -22,8 +22,8 @@ void initSimulation(
 );
 
 void runSimulationStep(
-    ParticlesSoA* prev,
-    ParticlesSoA* next,
+    ParticlesSoA prev,
+    ParticlesSoA next,
     ParticlesAoS* render,
     int numParticles,
     float width,

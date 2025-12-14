@@ -10,7 +10,6 @@ The choice of AoS Layout was made to optimize memory access patterns for renderi
 
 struct ParticlesAoS {
     uint32_t numParticles; // number of particles in the buffer
-    uint32_t capacity;     // maximum number of particles the buffer can hold
 
     Particle* d_particles; // device pointer to particle data
     Particle* h_particles; // host pointer to particle data

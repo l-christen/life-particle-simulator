@@ -21,12 +21,19 @@ public:
     // Swap prev and next buffers when a simulation step is complete (better than copying data)
     void swap() {
         // Swap the buffer pointers
-        ParticlesSoA temp = prev;
-        prev = next;
-        next = temp;
+        std::swap(prev.d_x, next.d_x);
+        std::swap(prev.d_y, next.d_y);
+        std::swap(prev.d_vx, next.d_vx);
+        std::swap(prev.d_vy, next.d_vy);
+        std::swap(prev.d_type, next.d_type);
+        std::swap(prev.numParticles, next.numParticles);
     }
 
 private:
     // Maximum capacity of particles
     uint32_t capacity;
+
+    // GPU SoA buffer structures
+    void* d_prev;
+    void* d_next;
 };
