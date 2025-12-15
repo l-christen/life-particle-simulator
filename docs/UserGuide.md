@@ -10,18 +10,20 @@ You can access the simulator by cloning this repository and building the project
 
 ### Building from Source
 Requirements:
-* Linux OS :
-    * GCC/G++
-    * NVCC
+* Standard Linux OS :
+    * CPU architecture x86_64
+    * GCC/G++-11
+    * NVCC 12.x
+    * CUDA-compatible NVIDIA driver (tested with version: 535.261.03)
     * SCons build system
-    * Godot Engine (for the GUI)
+    * Godot Engine V4.5 (for the GUI)
 * Windows OS (not tested) :
     * MSVC
     * NVCC
     * SCons build system
-    * Godot Engine (for the GUI)
+    * Godot Engine V4.5 (for the GUI)
 
-Note : You might need to adjust your C++ compiler version to match the NVCC supported version.
+Note : If you want to use another version of NVCC, it could work but you might need to adjust the SConstruct file accordingly to use the compatible version of g++.
 
 
 1. Clone the repository :
@@ -50,11 +52,12 @@ Note : You might need to adjust your C++ compiler version to match the NVCC supp
 ### Using Pre-built Executable (Linux only)
 1. Go to the [releases]()
 2. Download the latest release for Linux.
-3. Extract the downloaded file. The executable need to be in the same folder as the .pck file.
+3. Extract the downloaded file. The executable needs to be in the same folder as the .pck file.
 4. Run the executable.
+Note : Check that your system has the required CUDA drivers installed and the CPU architecture is compatible.
 
 ## Simulation parameters
-- Number of particles per color (red, blue, green, yellow), max 250'000'000 particles per color.
+- Number of particles per color (red, blue, green, yellow), max 250'000 particles per color.
 - Interaction rules between colors (attraction, repulsion, neutral), sliders from -100 to 100. A negative value means repulsion, a positive value means attraction.
 - Radius of interaction between particles, from 0 to 100'000. If you set a radius for a color, particles of that color will only interact with particles within that radius.
 - Delta time for the simulation, from 0.0 to ???. A higher delta time means faster simulation, but can lead to instability.
@@ -66,7 +69,7 @@ The simulation uses a simple particle interaction model based on attraction and 
 The force's calculation is inspired by the universal law of gravitation of Newton, but adapted for attraction and repulsion between different particle types.
 
 Newton's formula for gravitational force:
-$F = G \cdot (m_1 * m_2) / d^2$
+$F = G \cdot (m_1 \cdot m_2) / d^2$
 
 In our simulation, we assume all particles have a unit mass (m_1 = m_2 = 1) and we replace the gravitational constant G with an interaction strength k defined by the user.
 
@@ -75,9 +78,9 @@ Formula for force calculation:
 - If the distance squared is less than the interaction radius squared, a force is applied.
 - The force magnitude is calculated as : $F = k / d^2$ where k is the interaction strength (positive for attraction, negative for repulsion).
 - To avoid trigonometric functions, we get the normalized direction vector from particle 1 to particle 2 to determine x and y Force components, we calculate : $dir = ((x_2 - x_1) / d, (y_2 - y_1) / d)$
-- The force vector applied to particle 1 is then : $F_{vector} = F * dir$
-- A force is a mass times acceleration (F = m * a). Since we assume unit mass, the acceleration is equal to the force : $a_{vector} = F_{vector}$
-- The particle's velocity is updated based on the acceleration and the delta time : $v_{new} = v_{old} + a_{vector} * deltaTime$
+- The force vector applied to particle 1 is then : $F_{vector} = F \cdot dir$
+- A force is a mass times acceleration $F = m \cdot a$. Since we assume unit mass, the acceleration is equal to the force : $a_{vector} = F_{vector}$
+- The particle's velocity is updated based on the acceleration and the delta time : $v_{new} = v_{old} + a_{vector} \cdot deltaTime$
 - TODO : REFINED THE WAY VISCOSITY IS APPLIED
 
 
