@@ -1,1 +1,15 @@
+# Godot metadata cache
 godot/.godot/
+
+# Godot resource cache
+*.import
+
+# Godot build outputs
+godot/bin/
+
+# SCons build cache
+native/.sconsign.dblite
+
+*.obj
+*.o
+*.os
