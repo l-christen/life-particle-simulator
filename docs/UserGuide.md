@@ -66,7 +66,7 @@ The simulation uses a simple particle interaction model based on attraction and 
 The force's calculation is inspired by the universal law of gravitation of Newton, but adapted for attraction and repulsion between different particle types.
 
 Newton's formula for gravitational force:
-$F = G * (m_1 * m_2) / d^2$
+$F = G \cdot (m_1 * m_2) / d^2$
 
 In our simulation, we assume all particles have a unit mass (m_1 = m_2 = 1) and we replace the gravitational constant G with an interaction strength k defined by the user.
 
