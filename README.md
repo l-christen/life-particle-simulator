@@ -4,7 +4,9 @@
 
 # LPS - Life Particle Simulator
 
-LPS is a particle simulator that allows users to simulate particles behavior with simple rules in a 2D environment. Key features include:
+LPS is a particle simulator that allows users to simulate particles behavior with simple rules in a 2D environment. This project is inspired by Brainxyz's video, which you can find [here](https://www.youtube.com/watch?v=0Kx4Y9TVMGg&t=127s). 
+
+Key features include:
 - Fast simulation computation using GPU acceleration.
 - Real-time visualization of particle interactions.
 - Easy-to-use interface for setting up simulations and viewing results.
