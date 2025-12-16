@@ -325,34 +325,19 @@ func _connect_sliders():
 func _connect_spinboxes():
 	# Define radius spinboxes
 	var radius_vboxes = [
-		$GlobalVBox/RulesRadiusVBox/RedContainer/RedParametersVBox,
-		$GlobalVBox/RulesRadiusVBox/BlueContainer/BlueParametersVBox,
-		$GlobalVBox/RulesRadiusVBox/GreenContainer/GreenParametersVBox,
-		$GlobalVBox/RulesRadiusVBox/YellowContainer/YellowParametersVBox
+		$GlobalVBox/RulesRadiusVBox/RedContainer/RedParametersVBox/RedRadiusHBox,
+		$GlobalVBox/RulesRadiusVBox/BlueContainer/BlueParametersVBox/BlueRadiusHBox,
+		$GlobalVBox/RulesRadiusVBox/GreenContainer/GreenParametersVBox/GreenRadiusHBox,
+		$GlobalVBox/RulesRadiusVBox/YellowContainer/YellowParametersVBox/YellowRadiusHBox
 	]
 	# Iterate through radius spinboxes
 	for vbox in radius_vboxes:
-		var input_node = vbox.get_node_or_null("RedRadiusHBox/RadiusInput")
+		var input_node = vbox.get_node_or_null("RadiusInput")
 		if input_node and input_node is SpinBox:
 			# Create a callable with the input_node bound as an argument
 			var callable = Callable(self, "_on_parameter_input_changed").bind(input_node)
 			if not input_node.is_connected("value_changed", callable):
 				input_node.connect("value_changed", callable)
-
-	# Define particle count spinboxes
-	var count_nodes = [
-		$GlobalVBox/ParticleCountHBox/RedParticleCount/RedCountInput,
-		$GlobalVBox/ParticleCountHBox/BlueParticleCount/BlueCountInput,
-		$GlobalVBox/ParticleCountHBox/GreenParticleCount/GreenCountInput,
-		$GlobalVBox/ParticleCountHBox/YellowParticleCount/YellowCountInput,
-	]
-	# Iterate through count spinboxes
-	for node in count_nodes:
-		if node and node is SpinBox:
-			# Create a callable with the node bound as an argument
-			var callable = Callable(self, "_on_count_input_changed").bind(node)
-			if not node.is_connected("value_changed", callable):
-				node.connect("value_changed", callable)
 
 	# Connect dt and viscosity spinboxes
 	var dt_node = dt_viscosity_input_panel.get_node_or_null("DtInput")
@@ -367,7 +352,3 @@ func _connect_spinboxes():
 		var callable = Callable(self, "_on_parameter_input_changed").bind(viscosity_node)
 		if not viscosity_node.is_connected("value_changed", callable):
 			viscosity_node.connect("value_changed", callable)
-
-
-func _on_count_input_changed(_new_value: float):
-	pass
