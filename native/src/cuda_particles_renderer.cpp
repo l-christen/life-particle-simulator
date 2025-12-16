@@ -1,20 +1,17 @@
 #include "cuda_particles_renderer.h"
-
-
 #include <godot_cpp/core/class_db.hpp>
 #include <godot_cpp/classes/multi_mesh.hpp>
 #include <godot_cpp/classes/multi_mesh_instance2d.hpp>
 #include <godot_cpp/classes/quad_mesh.hpp>
 #include <godot_cpp/classes/node2d.hpp>
 #include <godot_cpp/variant/packed_float32_array.hpp>
-
 #include "simulation.cuh"
 #include "compute_buffers.h"
 
 
 using namespace godot;
 
-// Binding methods for GDExtension, only static methods can be bound
+// Binding methods for GDExtension
 void CudaParticlesRenderer::_bind_methods() {
     ClassDB::bind_method(D_METHOD("start_simulation", "numRed", "numBlue", "numGreen", "numYellow", "simulationRules", "simulationRadiusOfInfluence", "width", "height"), 
         &CudaParticlesRenderer::start_simulation);

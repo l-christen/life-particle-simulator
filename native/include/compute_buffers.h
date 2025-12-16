@@ -3,7 +3,6 @@
 #include "particlesSoA.cuh"
 #include "particlesAoS.cuh"
 #include "particle.h"
-
 #include <cstdint>
 #include <cstdlib>
 #include <utility>

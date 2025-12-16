@@ -1,5 +1,4 @@
 #include "compute_buffers.h"
-
 #include <cuda_runtime.h>
 #include <cstdio>
 #include <cstdlib>
