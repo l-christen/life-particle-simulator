@@ -335,7 +335,7 @@ func _connect_spinboxes():
 		var input_node = vbox.get_node_or_null("RadiusInput")
 		if input_node and input_node is SpinBox:
 			# Create a callable with the input_node bound as an argument
-			var callable = Callable(self, "_on_parameter_input_changed").bind(input_node)
+			var callable = Callable(self, "_on_parameter_input_changed")
 			if not input_node.is_connected("value_changed", callable):
 				input_node.connect("value_changed", callable)
 
@@ -343,12 +343,12 @@ func _connect_spinboxes():
 	var dt_node = dt_viscosity_input_panel.get_node_or_null("DtInput")
 	if dt_node and dt_node is SpinBox:
 		# Create a callable with the dt_node bound as an argument
-		var callable = Callable(self, "_on_parameter_input_changed").bind(dt_node)
+		var callable = Callable(self, "_on_parameter_input_changed")
 		if not dt_node.is_connected("value_changed", callable):
 			dt_node.connect("value_changed", callable)
 	var viscosity_node = dt_viscosity_input_panel.get_node_or_null("ViscosityInput")
 	if viscosity_node and viscosity_node is SpinBox:
 		# Create a callable with the viscosity_node bound as an argument
-		var callable = Callable(self, "_on_parameter_input_changed").bind(viscosity_node)
+		var callable = Callable(self, "_on_parameter_input_changed")
 		if not viscosity_node.is_connected("value_changed", callable):
 			viscosity_node.connect("value_changed", callable)
