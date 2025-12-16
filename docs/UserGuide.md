@@ -50,7 +50,7 @@ Note : If you want to use another version of NVCC, it could work but you might n
 6. Run the project or export it as an executable.
 
 ### Using Pre-built Executable (Linux only)
-1. Go to the [releases]()
+1. Go to the [releases](https://github.com/l-christen/life-particle-simulator/releases/)
 2. Download the latest release for Linux.
 3. Extract the downloaded file. The executable needs to be in the same folder as the .pck file.
 4. Run the executable.
@@ -58,10 +58,10 @@ Note : Check that your system has the required CUDA drivers installed and the CP
 
 ## Simulation parameters
 - Number of particles per color (red, blue, green, yellow), max 250'000 particles per color.
-- Interaction rules between colors (attraction, repulsion, neutral), sliders from -100 to 100. A negative value means repulsion, a positive value means attraction.
-- Radius of interaction between particles, from 0 to 100'000. If you set a radius for a color, particles of that color will only interact with particles within that radius.
-- Delta time for the simulation, from 0.0 to ???. A higher delta time means faster simulation, but can lead to instability.
-- Viscosity of the environment, from 0.0 to ???. Behavior needs to be refined.
+- Interaction rules between colors (attraction, repulsion, neutral), sliders from -2000 to 2000. A negative value means repulsion, a positive value means attraction.
+- Radius of interaction between particles, from 0 to 1000. If you set a radius for a color, particles of that color will only interact with particles within that radius.
+- Delta time for the simulation, from 0.0 to 4.0. A higher delta time means faster simulation, but can lead to instability.
+- Viscosity of the environment, from 0.0 to 2.0. A higher viscosity means particles will slow down faster. The higher your delta time, the higher viscosity you should set to avoid particles flying away too fast.
 
 ## Simulation physics
 The simulation uses a simple particle interaction model based on attraction and repulsion forces. Each particle exerts a force on other particles based on the defined interaction rules and distance.
@@ -76,12 +76,15 @@ In our simulation, we assume all particles have a unit mass (m_1 = m_2 = 1) and 
 Formula for force calculation:
 - The distance squared between two particles is calculated as : $d^2 = (x_2 - x_1)^2 + (y_2 - y_1)^2$
 - If the distance squared is less than the interaction radius squared, a force is applied.
-- The force magnitude is calculated as : $F = k / d^2$ where k is the interaction strength (positive for attraction, negative for repulsion).
+- The force magnitude is calculated as : $F = k / d^2$ where k is the interaction strength (positive for attraction, negative for repulsion). We add a softening value to the distance squared to avoid a division by zero and extreme forces at very close distances.
 - To avoid trigonometric functions, we get the normalized direction vector from particle 1 to particle 2 to determine x and y Force components, we calculate : $dir = ((x_2 - x_1) / d, (y_2 - y_1) / d)$
 - The force vector applied to particle 1 is then : $F_{vector} = F \cdot dir$
 - A force is a mass times acceleration $F = m \cdot a$. Since we assume unit mass, the acceleration is equal to the force : $a_{vector} = F_{vector}$
 - The particle's velocity is updated based on the acceleration and the delta time : $v_{new} = v_{old} + a_{vector} \cdot deltaTime$
-- TODO : REFINED THE WAY VISCOSITY IS APPLIED
+- The viscosity is applied to the velocity to simulate drag : $v_{new} = v_{new} \cdot exp(-viscosity \cdot deltaTime)$
+- Finally, the particle's position is updated based on the new velocity and delta time : $p_{new} = p_{old} + v_{new} \cdot deltaTime$
+
+Clamps for forces and velocities are applied in the code to ensure numerical stability.
 
 
 ## Once the simulator is running
@@ -94,18 +97,18 @@ The simulation/simulator can have 3 states : Stopped, Running and Paused.
 - In this state, you can modify all simulation parameters.
 - Once you have set up the parameters, click on the "Start" button to start the simulation.
 
-Add img
+![Stopped state](./img/state_idle.png)
 
 ### Running state
 - In this state, the simulation is running in real-time.
 - You can click on the "Pause" button to pause the simulation.
 - You can also click on the "Stop" button to stop the simulation and return to the Stopped state.
 
-Add img
+![Running state](./img/state_running.png)
 
 ### Paused state
 - In this state, the simulation is paused.
 - You can modify all simulation parameters except the number of particles.
 - You can click on the "Play" button to resume the simulation.
 
-Add img
+![Paused state](./img/state_paused.png)
