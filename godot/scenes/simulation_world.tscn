@@ -487,8 +487,8 @@ vertical_alignment = 1
 
 [node name="DtInput" type="SpinBox" parent="CanvasLayer/Control/GlobalVBox/DtViscosityHbox"]
 layout_mode = 2
-max_value = 10.0
-step = 0.1
+max_value = 4.0
+step = 0.01
 
 [node name="ViscosityLabel" type="Label" parent="CanvasLayer/Control/GlobalVBox/DtViscosityHbox"]
 layout_mode = 2
@@ -498,8 +498,8 @@ vertical_alignment = 1
 
 [node name="ViscosityInput" type="SpinBox" parent="CanvasLayer/Control/GlobalVBox/DtViscosityHbox"]
 layout_mode = 2
-max_value = 5.0
-step = 0.2
+max_value = 2.0
+step = 0.01
 
 [node name="SimControlsHBox" type="HBoxContainer" parent="CanvasLayer/Control/GlobalVBox"]
 layout_mode = 2

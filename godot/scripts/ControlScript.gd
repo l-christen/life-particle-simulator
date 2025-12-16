@@ -241,8 +241,8 @@ func collect_simulation_parameters() -> Dictionary:
 		"num_yellow": int(num_yellow),
 		"rules": rules_array,
 		"radius": radius_array,
-		"viscosity": viscosity_value,
-		"dt": dt_value
+		"viscosity": float(viscosity_value),
+		"dt": float(dt_value)
 	}
 
 # Method called when a value change in the UI (main eventlistener)
