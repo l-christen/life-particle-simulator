@@ -3,7 +3,7 @@
 extends Control
 
 # Get Nodes when they are instantiates
-@onready var particle_renderer = $"../..//CudaParticlesRenderer"
+@onready var particle_renderer = $"../../CudaParticlesRenderer"
 
 @onready var particle_count_panel = $GlobalVBox/ParticleCountHBox
 @onready var rules_radius_panel = $GlobalVBox/RulesRadiusVBox
@@ -32,7 +32,6 @@ func _ready() -> void:
 	
 	# Connect sliders and spinboxes to the eventlistener
 	_connect_sliders()
-	_connect_spinboxes()
 	
 	# Update UI components visibility
 	update_ui_for_state()
@@ -136,6 +135,18 @@ func _on_toggle_pause_button_pressed():
 		update_ui_for_state()
 		
 	elif current_state == SimState.PAUSED:
+		# Collect updated parameters if the simulation is paused
+		var rules_array = get_slider_rules()
+		var radius_array = get_radius_of_influence()
+		var dt_value = get_numerical_input(str(dt_viscosity_input_panel.get_path()) + "/DtInput")
+		var viscosity_value = get_numerical_input(str(dt_viscosity_input_panel.get_path()) + "/ViscosityInput")
+		
+		# Update the simulation parameters in the renderer
+		particle_renderer.update_rules(rules_array)
+		particle_renderer.update_radius_of_influence(radius_array)
+		particle_renderer.update_delta_time(dt_value)
+		particle_renderer.update_viscosity(viscosity_value)
+		
 		particle_renderer.update_is_running()
 		current_state = SimState.RUNNING
 		update_ui_for_state()
@@ -245,22 +256,6 @@ func collect_simulation_parameters() -> Dictionary:
 		"dt": float(dt_value)
 	}
 
-# Method called when a value change in the UI (main eventlistener)
-func _on_parameter_input_changed(_new_value):
-	if current_state == SimState.PAUSED:
-		# Collect updated parameters if the simulation is paused
-		var rules_array = get_slider_rules()
-		var radius_array = get_radius_of_influence()
-		var dt_value = get_numerical_input(str(dt_viscosity_input_panel.get_path()) + "/DtInput")
-		var viscosity_value = get_numerical_input(str(dt_viscosity_input_panel.get_path()) + "/ViscosityInput")
-		
-		# Update the simulation parameters in the renderer
-		particle_renderer.update_rules(rules_array)
-		particle_renderer.update_radius_of_influence(radius_array)
-		particle_renderer.update_delta_time(dt_value)
-		particle_renderer.update_viscosity(viscosity_value)
-		
-
 # Method called when a slider value change to modify the value in the slider label
 func _on_h_slider_value_changed(value: float, slider_node: HSlider) -> void:
 	# Update the corresponding label next to the slider
@@ -269,10 +264,6 @@ func _on_h_slider_value_changed(value: float, slider_node: HSlider) -> void:
 		if value_label and value_label is Label:
 			# Update label text with formatted value
 			value_label.text = "%.2f" % value
-			
-			# If simulation is paused, update the simulation parameters
-			if current_state == SimState.PAUSED:
-				_on_parameter_input_changed(value)
 
 # Method to setup sliders on _ready
 func setup_slider_ranges():
@@ -320,35 +311,3 @@ func _connect_sliders():
 				var callable = Callable(self, "_on_h_slider_value_changed").bind(slider)
 				if not slider.is_connected("value_changed", callable):
 					slider.connect("value_changed", callable)
-
-# Method to connect spinboxes to their eventlistener (useful to modify simulation parameters when state is PAUSED)
-func _connect_spinboxes():
-	# Define radius spinboxes
-	var radius_vboxes = [
-		$GlobalVBox/RulesRadiusVBox/RedContainer/RedParametersVBox/RedRadiusHBox,
-		$GlobalVBox/RulesRadiusVBox/BlueContainer/BlueParametersVBox/BlueRadiusHBox,
-		$GlobalVBox/RulesRadiusVBox/GreenContainer/GreenParametersVBox/GreenRadiusHBox,
-		$GlobalVBox/RulesRadiusVBox/YellowContainer/YellowParametersVBox/YellowRadiusHBox
-	]
-	# Iterate through radius spinboxes
-	for vbox in radius_vboxes:
-		var input_node = vbox.get_node_or_null("RadiusInput")
-		if input_node and input_node is SpinBox:
-			# Create a callable with the input_node bound as an argument
-			var callable = Callable(self, "_on_parameter_input_changed")
-			if not input_node.is_connected("value_changed", callable):
-				input_node.connect("value_changed", callable)
-
-	# Connect dt and viscosity spinboxes
-	var dt_node = dt_viscosity_input_panel.get_node_or_null("DtInput")
-	if dt_node and dt_node is SpinBox:
-		# Create a callable with the dt_node bound as an argument
-		var callable = Callable(self, "_on_parameter_input_changed")
-		if not dt_node.is_connected("value_changed", callable):
-			dt_node.connect("value_changed", callable)
-	var viscosity_node = dt_viscosity_input_panel.get_node_or_null("ViscosityInput")
-	if viscosity_node and viscosity_node is SpinBox:
-		# Create a callable with the viscosity_node bound as an argument
-		var callable = Callable(self, "_on_parameter_input_changed")
-		if not viscosity_node.is_connected("value_changed", callable):
-			viscosity_node.connect("value_changed", callable)
