@@ -7,6 +7,7 @@
 #include <godot_cpp/core/class_db.hpp>
 
 namespace godot {
+    // Module initialization and uninitialization functions
     void initialize_gdextension_module(ModuleInitializationLevel p_level);
     void uninitialize_gdextension_module(ModuleInitializationLevel p_level);
 }

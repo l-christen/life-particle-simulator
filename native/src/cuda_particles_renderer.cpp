@@ -63,7 +63,7 @@ void CudaParticlesRenderer::_ready() {
     // Create mesh
     Ref<QuadMesh> mesh; // create a smart pointer to QuadMesh
     mesh.instantiate(); // instantiate the quad mesh
-    mesh->set_size(Vector2(2.0f, 2.0f)); // set size of each particle quad
+    mesh->set_size(Vector2(4.0f, 4.0f)); // set size of each particle quad
     multimesh->set_mesh(mesh); // assign mesh to multimesh
 
     // Create node to display the MultiMesh
@@ -111,7 +111,7 @@ void CudaParticlesRenderer::update_multimesh(ParticlesAoS& render_buffer)
                 col = Color(0.2f, 0.4f, 1.0f, 1.0f);
                 break;
             case 2: // GREEN
-                col = Color(0.2f, 1.0f, 0.4f, 1.0f);
+                col = Color(0.0f, 1.0f, 0.6f, 1.0f);
                 break;
             case 3: // YELLOW
                 col = Color(1.0f, 1.0f, 0.3f, 1.0f);

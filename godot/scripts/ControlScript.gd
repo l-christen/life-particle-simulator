@@ -276,10 +276,9 @@ func _on_h_slider_value_changed(value: float, slider_node: HSlider) -> void:
 
 # Method to setup sliders on _ready
 func setup_slider_ranges():
-	# Define constants for slider configuration
-	const MIN_RULE_VALUE: float = -100.0
-	const MAX_RULE_VALUE: float = 100.0
-	const SLIDER_STEP: float = 0.2
+	const MIN_RULE_VALUE: float = -2000.0
+	const MAX_RULE_VALUE: float = 2000.0
+	const SLIDER_STEP: float = 2.0
 	
 	# Define the container nodes for each color
 	var color_vboxes = [
