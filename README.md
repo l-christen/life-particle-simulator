@@ -19,22 +19,24 @@ To learn more, read the user guide in the [docs](./docs/USER_GUIDE.md) folder.
 - With the actual build settings, a computer with a Linux OS is required. (Windows and MacOS might work with some adjustments in the SConstruct file).
 
 ## Simulator access
-You can access the simulator by cloning this repository and building the project using SCons or an executable file provided in the releases section.
+You can access the simulator by cloning this repository and building the project using SCons or an executable file is provided in the releases section.
 
 ### Building from Source
 Requirements:
-* Linux OS :
-    * GCC/G++
-    * NVCC
+* Standard Linux OS :
+    * CPU architecture x86_64
+    * GCC/G++-11
+    * NVCC 12.x
+    * CUDA-compatible NVIDIA driver (tested with version: 535.261.03)
     * SCons build system
-    * Godot Engine (for the GUI)
+    * Godot Engine V4.5 (for the GUI)
 * Windows OS (not tested) :
     * MSVC
     * NVCC
     * SCons build system
-    * Godot Engine (for the GUI)
+    * Godot Engine V4.5 (for the GUI)
 
-Note : You might need to adjust your C++ compiler version to match the NVCC supported version.
+Note : If you want to use another version of NVCC, it could work but you might need to adjust the SConstruct file accordingly to use the compatible version of g++.
 
 
 1. Clone the repository :
@@ -61,10 +63,15 @@ Note : You might need to adjust your C++ compiler version to match the NVCC supp
 6. Run the project or export it as an executable.
 
 ### Using Pre-built Executable (Linux only)
-1. Go to the [releases]()
+1. Go to the [releases](https://github.com/l-christen/life-particle-simulator/releases/)
 2. Download the latest release for Linux.
-3. Extract the downloaded file. The executable need to be in the same folder as the .pck file.
+3. Extract the downloaded file. The executable needs to be in the same folder as the .pck file.
 4. Run the executable.
+Note : Check that your system has the required CUDA drivers installed and the CPU architecture is compatible.
 
 ## License
 This project is licensed under the MIT License, see the [LICENSE](./LICENSE) file for details.
+
+## Credits
+The project banner was generated using Gemini.
+
