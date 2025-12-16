@@ -35,6 +35,6 @@ private:
     uint32_t capacity;
 
     // GPU SoA buffer structures
-    void* d_prev;
-    void* d_next;
+    void* d_prev = nullptr;
+    void* d_next = nullptr;
 };
