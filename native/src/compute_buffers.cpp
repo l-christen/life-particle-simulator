@@ -1,8 +1,21 @@
 #include "compute_buffers.h"
 
 #include <cuda_runtime.h>
+#include <cstdio>
+#include <cstdlib>
 
 // This file was made to avoid indirect cuda runtime includes in GDExtension
+
+// Macro to check for CUDA errors found there : https://stackoverflow.com/questions/14038589/what-is-the-canonical-way-to-check-for-errors-using-the-cuda-runtime-api
+#define gpuErrchk(ans) { gpuAssert((ans), __FILE__, __LINE__); }
+inline void gpuAssert(cudaError_t code, const char *file, int line, bool abort=true)
+{
+   if (code != cudaSuccess) 
+   {
+      fprintf(stderr,"GPUassert: %s %s %d\n", cudaGetErrorString(code), file, line);
+      if (abort) exit(code);
+   }
+}
 
 // Constructor that allocates device memory for compute buffers
 ComputeBuffers::ComputeBuffers(uint32_t max_particles) {
@@ -13,9 +26,9 @@ ComputeBuffers::ComputeBuffers(uint32_t max_particles) {
     bufferSoASize += sizeof(float) * capacity * 4; // x, y, vx, vy
     bufferSoASize += sizeof(uint32_t) * capacity;  // type
     // Allocate prev buffer
-    cudaMalloc(&d_prev, bufferSoASize);
+    gpuErrchk( cudaMalloc(&d_prev, bufferSoASize) );
     // Allocate next buffer
-    cudaMalloc(&d_next, bufferSoASize);
+    gpuErrchk( cudaMalloc(&d_next, bufferSoASize) );
     // Define pointers positions in prev buffer
     size_t offset = 0;
     prev.d_x = (float*)((char*)d_prev + offset);
@@ -40,7 +53,7 @@ ComputeBuffers::ComputeBuffers(uint32_t max_particles) {
     next.d_type = (uint32_t*)((char*)d_next + offset);
 
     // Allocate device memory for render buffer
-    cudaMalloc(&renderBuffer.d_particles, sizeof(Particle) * capacity);
+    gpuErrchk( cudaMalloc(&renderBuffer.d_particles, sizeof(Particle) * capacity) );
 
     // Allocate host memory for render buffer
     renderBuffer.h_particles = new Particle[capacity];
@@ -53,11 +66,11 @@ ComputeBuffers::ComputeBuffers(uint32_t max_particles) {
 
 // Destructor that frees device memory
 ComputeBuffers::~ComputeBuffers() {
-    cudaFree(d_prev);
+    gpuErrchk( cudaFree(d_prev) );
 
-    cudaFree(d_next);
+    gpuErrchk( cudaFree(d_next) );
 
-    cudaFree(renderBuffer.d_particles);
+    gpuErrchk( cudaFree(renderBuffer.d_particles) );
 
     delete[] renderBuffer.h_particles;
 }
