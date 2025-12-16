@@ -5,7 +5,7 @@ This developer guide provides an in-depth overview of the architecture and imple
 ---
 
 ## Architecture first attempt
-At first, the aimed achtitecture was the one explicited in the ./01-architecture-choice.md. To summarize, the idea was to keep the simulation data on the GPU all along the simulation. Godot uses Vulkan as rendering backend, and Vulkan can interoperate with CUDA. The idea was to create a Vulkan buffer in Godot, get its handle in the GDExtension, and use it as a CUDA buffer in the simulation. Unfortunately, this approach was not successful due to time constraints and lack of experience with Vulkan, CUDA interop and Godot engine's implementation. The reason of the failure is explicited in ./02-godot-NativeVulkan.md. Thus, the current architecture uses data transfer between GPU and CPU each frame, which is suboptimal but works correctly.
+At first, the aimed achtitecture was the one explicited [here](./01-architecture-choice.md). To summarize, the idea was to keep the simulation data on the GPU all along the simulation. Godot uses Vulkan as rendering backend, and Vulkan can interoperate with CUDA. The idea was to create a Vulkan buffer in Godot, get its handle in the GDExtension, and use it as a CUDA buffer in the simulation. Unfortunately, this approach was not successful due to time constraints and lack of experience with Vulkan, CUDA interop and Godot engine's implementation. The reason of the failure is explicited [here](./02-godot-NativeVulkan.md). Thus, the current architecture uses data transfer between GPU and CPU each frame, which is suboptimal but works correctly.
 
 
 ---
